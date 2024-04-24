@@ -6,6 +6,7 @@ namespace HR
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            //test
 
             // Add services to the container.
 

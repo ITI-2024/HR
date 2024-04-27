@@ -1,6 +1,7 @@
 ﻿using HR.Helper.Validation;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace HR.Models
 {
@@ -45,9 +46,9 @@ namespace HR.Models
 
         [Display(Name = "DepartmentName")]
         public  int? idDept { get; set; }
-
+        [JsonIgnore]
         public virtual department? dept { get; set; }
-
+        [JsonIgnore]
         public virtual List<AttendenceEmployee>? Attendence { get; set; }
 
     }

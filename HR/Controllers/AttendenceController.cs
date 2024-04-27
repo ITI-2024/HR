@@ -30,21 +30,31 @@ namespace HR.Controllers
                 DayDate=a.dayDate,
                 DayName =a.dayDate.DayOfWeek.ToString()
 
-        }).ToList();
+        }).OrderBy(a=>a.DayDate).ToList();
             return Ok(AttendenceDTO);
         }
- 
-        //[HttpPost]
-        //public IActionResult AddEmployeeAttendence()
-        //{
-        //    if (emp == null) return NotFound();
-        //    if (ModelState.IsValid)
-        //    {
-        //        db.Employees.Add(emp);
-        //        db.SaveChanges();
-        //        return Ok(emp);
-        //    }
-        //    return BadRequest();
-        //}
+
+        [HttpPost]
+        public IActionResult AddEmployeeAttendence(AddAttendenceDTO emp)
+        {
+            if (emp == null) return NotFound();
+            if (ModelState.IsValid)
+            {
+                var employee=db.Employees.Where(e=>e.name==emp.EmployeeName).FirstOrDefault();
+                if (employee == null) return NotFound();
+                AttendenceEmployee addEmpData=new AttendenceEmployee();
+                addEmpData.dayDate = emp.DayDate;
+                addEmpData.arrivingTime = emp.ArrivingTime;
+                addEmpData.leavingTime = emp.LeavingTime;
+                addEmpData.idDept = employee.idDept;
+                addEmpData.idemp = employee.id;
+                var temp = db.AttendenceEmployees.Where(e =>( e.idemp == employee.id && e.dayDate==emp.DayDate)).FirstOrDefault();
+                if (temp != null) return BadRequest("This Attendence Already Exist");
+                db.AttendenceEmployees.Add(addEmpData);
+                db.SaveChanges();
+                return Ok(addEmpData);
+            }
+            return BadRequest();
+        }
     }
 }

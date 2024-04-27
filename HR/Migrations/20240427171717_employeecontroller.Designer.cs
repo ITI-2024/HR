@@ -4,6 +4,7 @@ using HR.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HR.Migrations
 {
     [DbContext(typeof(HRDbcontext))]
-    partial class HRDbcontextModelSnapshot : ModelSnapshot
+    [Migration("20240427171717_employeecontroller")]
+    partial class employeecontroller
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,9 +109,6 @@ namespace HR.Migrations
                     b.Property<DateOnly>("dayDate")
                         .HasColumnType("date");
 
-                    b.Property<int?>("idDept")
-                        .HasColumnType("int");
-
                     b.Property<string>("idemp")
                         .HasColumnType("nvarchar(450)");
 
@@ -116,8 +116,6 @@ namespace HR.Migrations
                         .HasColumnType("time");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("idDept");
 
                     b.HasIndex("idemp");
 
@@ -376,17 +374,11 @@ namespace HR.Migrations
 
             modelBuilder.Entity("HR.Models.AttendenceEmployee", b =>
                 {
-                    b.HasOne("HR.Models.department", "department")
-                        .WithMany()
-                        .HasForeignKey("idDept");
-
                     b.HasOne("HR.Models.Employee", "Emp")
                         .WithMany("Attendence")
                         .HasForeignKey("idemp");
 
                     b.Navigation("Emp");
-
-                    b.Navigation("department");
                 });
 
             modelBuilder.Entity("HR.Models.Employee", b =>

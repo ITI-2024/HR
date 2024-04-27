@@ -21,5 +21,9 @@ namespace HR.Models
         [ForeignKey("Emp")]
         public string? idemp { get; set; }
         public virtual Employee? Emp { get; set; }
+
+        [ForeignKey("department")]
+        public int? idDept { get; set; }
+        public virtual department? department { get; set; }
     }
 }

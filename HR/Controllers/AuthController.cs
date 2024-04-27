@@ -17,7 +17,7 @@ namespace HR.Controllers
             
         }
         [HttpPost]
-        public async Task<IActionResult> RegisterAsync(RegisterModel model)
+        public async Task<IActionResult> addUserAsync(RegisterModel model)
         {
             if (ModelState.IsValid)
             {

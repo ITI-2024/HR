@@ -1,6 +1,8 @@
-﻿using HR.Models;
+﻿using HR.DTO;
+using HR.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.Intrinsics.Arm;
 
 namespace HR.Controllers
 {
@@ -17,6 +19,8 @@ namespace HR.Controllers
             if(s == null) return BadRequest();
             if(ModelState.IsValid)
             {
+                var settingofEmp = db.PublicSettings.ToList();
+                if(settingofEmp.Count > 0 ) return BadRequest("Already Exist public Setting");
                 db.PublicSettings.Add(s);
                 db.SaveChanges();
                 return Ok(s);
@@ -32,15 +36,37 @@ namespace HR.Controllers
             return Ok(setting);
 
         }
-        [HttpPut]
-        public IActionResult UpdateSetting(PublicSetting s) 
+        [HttpPut("{id}")]
+        public IActionResult UpdateSetting(int id, publicSettingDto s) 
         {
             if (s == null) return BadRequest();
+            PublicSetting ps = new PublicSetting();
             if (ModelState.IsValid)
             {
-                db.PublicSettings.Update(s);
-                db.SaveChanges();
-                return Ok(s);
+                var settingofEmp = db.PublicSettings.ToList();
+                if (settingofEmp.Count == 0)
+
+                {
+                   
+                    ps.extraHours = s.extraHours;
+                    ps.deductionHours= s.deductionHours;
+                    ps.firstWeekend= s.firstWeekend;
+                    ps.secondWeekend= s.secondWeekend;
+                    db.PublicSettings.Add(ps);
+                    db.SaveChanges();
+                    return Ok(ps);
+                }
+                else
+                { 
+                    var dps=db.PublicSettings.FirstOrDefault(s=>s.id==id);
+                    dps.extraHours = s.extraHours;
+                    dps.deductionHours = s.deductionHours;
+                    dps.firstWeekend = s.firstWeekend;
+                    dps.secondWeekend = s.secondWeekend;
+                  
+                    db.SaveChanges();
+                    return Ok(dps);
+                }
             }
             return BadRequest();
             } 

@@ -41,7 +41,9 @@ namespace HR.Controllers
             if (ModelState.IsValid)
             {
                 var employee=db.Employees.Where(e=>e.name==emp.EmployeeName).FirstOrDefault();
+                var officialHoliday =db.Holidays.Where(h=>h.HolidayDate==emp.DayDate).FirstOrDefault(); 
                 if (employee == null) return NotFound();
+                if (officialHoliday != null) return BadRequest("this day is Official Holiday");
                 AttendenceEmployee addEmpData=new AttendenceEmployee();
                 addEmpData.dayDate = emp.DayDate;
                 addEmpData.arrivingTime = emp.ArrivingTime;
@@ -55,6 +57,43 @@ namespace HR.Controllers
                 return Ok(addEmpData);
             }
             return BadRequest();
+        }
+        [HttpGet("{id:int}")]
+        public IActionResult GetById(int id)
+        {
+            var empAttendence = db.AttendenceEmployees.Where(a => a.Id == id).FirstOrDefault();
+            if (empAttendence == null) return NotFound();
+            return Ok(empAttendence);
+        }
+        [HttpPut("{id:int}")]
+        public IActionResult EditEmployeeAttendence(int id,AddAttendenceDTO empAttendence)
+        {
+            if (empAttendence == null) return BadRequest();
+            if (ModelState.IsValid)
+            {
+                var employeeAttendence = db.AttendenceEmployees.Where(a => a.Id == id).FirstOrDefault();
+                if (employeeAttendence == null) return NotFound();
+                var employee = db.Employees.Where(e => e.name == empAttendence.EmployeeName).FirstOrDefault();
+                if(employee == null) return NotFound();
+                employeeAttendence.dayDate = empAttendence.DayDate;
+                employeeAttendence.arrivingTime = empAttendence.ArrivingTime;
+                employeeAttendence.leavingTime = empAttendence.LeavingTime;
+                employeeAttendence.idDept = employee.idDept;
+                employeeAttendence.idemp = employee.id;
+                db.SaveChanges();
+                return Ok(employeeAttendence);
+            }
+            return BadRequest();
+        }
+        [HttpDelete("{id}")]
+        public IActionResult DeleteEmployeeAttendence(int id)
+        {
+            var empAttendence = db.AttendenceEmployees.Find(id);
+            if (empAttendence is null) return NotFound();
+            db.AttendenceEmployees.Remove(empAttendence);
+            db.SaveChanges();
+            return Ok(empAttendence);
+
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Cryptography.Xml;
+using System.Text.Json.Serialization;
 
 namespace HR.Models
 {
@@ -20,6 +21,12 @@ namespace HR.Models
 
         [ForeignKey("Emp")]
         public string? idemp { get; set; }
+        [JsonIgnore]
         public virtual Employee? Emp { get; set; }
+
+        [ForeignKey("department")]
+        public int? idDept { get; set; }
+
+        public virtual department? department { get; set; }
     }
 }

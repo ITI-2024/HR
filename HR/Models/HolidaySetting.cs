@@ -7,7 +7,6 @@ namespace HR.Models
         [Key]
         [StringLength(100)]
         public string Name { get; set; }
-   
         public string dayName { get; set; }
         [Required]
         [DataType(DataType.Date)]

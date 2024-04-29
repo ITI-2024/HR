@@ -8,15 +8,16 @@ namespace HR.Models
     {
         [Key]
         public DateOnly Monthofyear { get; set; }
-        
-        public int extraTime { get; set; }
+
+        public int extraTime { get; set; } //before public sting
 
         public int discountTime { get; set; }
 
         public double totalNetSalary { get; set; }
-        
-        public int attendofDay {  get; set; }
 
+        public int attendofDay { get; set; }
+        public string nameofMonth { get; set; }
+        public int absent { get; set; }
 
         [ForeignKey("Emp")]
         public string? idemp { get; set; }

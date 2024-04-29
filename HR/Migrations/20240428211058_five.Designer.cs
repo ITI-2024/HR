@@ -4,6 +4,7 @@ using HR.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HR.Migrations
 {
     [DbContext(typeof(HRDbcontext))]
-    partial class HRDbcontextModelSnapshot : ModelSnapshot
+    [Migration("20240428211058_five")]
+    partial class five
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -248,9 +251,6 @@ namespace HR.Migrations
                     b.Property<DateOnly>("Monthofyear")
                         .HasColumnType("date");
 
-                    b.Property<int>("attendofDay")
-                        .HasColumnType("int");
-
                     b.Property<int>("discountTime")
                         .HasColumnType("int");
 
@@ -259,9 +259,6 @@ namespace HR.Migrations
 
                     b.Property<string>("idemp")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<double>("totalNetSalary")
-                        .HasColumnType("float");
 
                     b.HasKey("Monthofyear");
 

@@ -14,10 +14,10 @@ namespace HR.Models
         public DateOnly dayDate {  get; set; }
         [Required]
         [DataType(DataType.Time)]
-        public TimeOnly arrivingTime { get; set; }
+        public TimeOnly? arrivingTime { get; set; }
         [Required]
         [DataType(DataType.Time)]
-        public TimeOnly leavingTime { get; set; }
+        public TimeOnly? leavingTime { get; set; }
 
         [ForeignKey("Emp")]
         public string? idemp { get; set; }

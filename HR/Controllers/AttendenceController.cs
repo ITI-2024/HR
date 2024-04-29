@@ -68,6 +68,7 @@ namespace HR.Controllers
             if (empAttendence == null) return NotFound();
             return Ok(empAttendence);
         }
+
         [HttpGet("{name:alpha}")]
         public IActionResult SearchByName(string name) {
             var employeeAttendence = db.AttendenceEmployees.Include(a => a.Emp).Include(a => a.department).ToList();

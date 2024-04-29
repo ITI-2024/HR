@@ -4,6 +4,7 @@ using HR.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HR.Migrations
 {
     [DbContext(typeof(HRDbcontext))]
-    partial class HRDbcontextModelSnapshot : ModelSnapshot
+    [Migration("20240428203111_third")]
+    partial class third
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,6 +24,21 @@ namespace HR.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("HR.DTO.informationAttendencperMonth", b =>
+                {
+                    b.Property<DateOnly>("Monthofyear")
+                        .HasColumnType("date");
+
+                    b.Property<string>("idemp")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Monthofyear");
+
+                    b.HasIndex("idemp");
+
+                    b.ToTable("AttendencperMonths");
+                });
 
             modelBuilder.Entity("HR.Models.ApplictionUsers", b =>
                 {
@@ -243,33 +261,6 @@ namespace HR.Migrations
                     b.ToTable("Departments");
                 });
 
-            modelBuilder.Entity("HR.Models.informationAttendencperMonth", b =>
-                {
-                    b.Property<DateOnly>("Monthofyear")
-                        .HasColumnType("date");
-
-                    b.Property<int>("attendofDay")
-                        .HasColumnType("int");
-
-                    b.Property<int>("discountTime")
-                        .HasColumnType("int");
-
-                    b.Property<int>("extraTime")
-                        .HasColumnType("int");
-
-                    b.Property<string>("idemp")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<double>("totalNetSalary")
-                        .HasColumnType("float");
-
-                    b.HasKey("Monthofyear");
-
-                    b.HasIndex("idemp");
-
-                    b.ToTable("Attendencpermonth");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -403,6 +394,15 @@ namespace HR.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("HR.DTO.informationAttendencperMonth", b =>
+                {
+                    b.HasOne("HR.Models.Employee", "Emp")
+                        .WithMany("AttendencperMonths")
+                        .HasForeignKey("idemp");
+
+                    b.Navigation("Emp");
+                });
+
             modelBuilder.Entity("HR.Models.AttendenceEmployee", b =>
                 {
                     b.HasOne("HR.Models.department", "department")
@@ -425,15 +425,6 @@ namespace HR.Migrations
                         .HasForeignKey("idDept");
 
                     b.Navigation("dept");
-                });
-
-            modelBuilder.Entity("HR.Models.informationAttendencperMonth", b =>
-                {
-                    b.HasOne("HR.Models.Employee", "Emp")
-                        .WithMany("AttendencperMonths")
-                        .HasForeignKey("idemp");
-
-                    b.Navigation("Emp");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

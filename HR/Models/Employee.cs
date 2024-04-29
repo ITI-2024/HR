@@ -50,6 +50,7 @@ namespace HR.Models
         public virtual department? dept { get; set; }
         [JsonIgnore]
         public virtual List<AttendenceEmployee>? Attendence { get; set; }
-
+    
+        public virtual List<informationAttendencperMonth>? AttendencperMonths { get; set; } 
     }
 }

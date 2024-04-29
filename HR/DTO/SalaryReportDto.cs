@@ -9,6 +9,8 @@
         public int absentDay { get; set; }
         public int extraHours { get; set; }
         public int dedectionHours { get; set; }
+        public int extraTimebeforSetting { get; set; }
+        public int discountTimebeforSetting { get; set; }
         public int totalExtra { get; set; }
         public int totalDiscount { get; set; }
         public double totalNetSalary { get; set; }

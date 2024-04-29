@@ -11,7 +11,7 @@ namespace HR.Models
         {
             
         }
-
+        public virtual DbSet<informationAttendencperMonth> Attendencpermonth { get; set; }
         public virtual DbSet<ApplictionUsers> Users { get; set; }
         public virtual DbSet<Employee>Employees { get; set; }
         public virtual DbSet<HolidaySetting> Holidays { get; set; }

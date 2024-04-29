@@ -85,26 +85,50 @@ namespace HR.Controllers
             return Ok(empAttendence);
         }
 
-        [HttpGet("{name}")]
-        public IActionResult SearchByName(string name) {
-            var filterAttendenceByEmp = db.AttendenceEmployees.Include(a => a.Emp).Where(a => a.Emp.name.ToLower().Contains(name.ToLower())).ToList();
-            var filterAttendenceByDept= db.AttendenceEmployees.Include(a => a.department).Where(a => a.department.Name.ToLower().Contains(name.ToLower())).ToList();
-            if (filterAttendenceByEmp == null || filterAttendenceByEmp.Count == 0)
-            {
-                if (filterAttendenceByDept == null || filterAttendenceByDept.Count == 0)
-                    return BadRequest("Invalid Employee or Department name");
-                return Ok(filterAttendenceByDept);
-            }
-            
-            return Ok(filterAttendenceByEmp);
-        }
-        [HttpGet("{fromDate:datetime},{toDate:datetime}")]
-        public IActionResult SearchByDate(DateOnly fromDate ,DateOnly toDate)
+        [HttpGet("{fromDate},{toDate},{name}")]
+        public IActionResult SearchByDate(DateOnly fromDate, DateOnly toDate,string name)
         {
+            var searchNameList = new List<AttendenceEmployee>();
+            searchNameList = [];
+            var searchName = "";
+            if (name != "none")
+            {
+                var filterAttendenceByEmp = db.AttendenceEmployees.Include(a => a.Emp).Where(a => a.Emp.name.ToLower().Contains(name.ToLower())).ToList();
+                var filterAttendenceByDept = db.AttendenceEmployees.Include(a => a.department).Where(a => a.department.Name.ToLower().Contains(name.ToLower())).ToList();
+                if (filterAttendenceByEmp == null || filterAttendenceByEmp.Count == 0)
+                {
+                    if (filterAttendenceByDept == null || filterAttendenceByDept.Count == 0)
+                        return BadRequest("Invalid Employee or Department name");
+                    searchNameList = filterAttendenceByDept;
+                    searchName = name;
+
+                }
+                else{
+                    searchNameList = filterAttendenceByEmp;
+                    searchName =name;
+                }
+            }
             if (fromDate > toDate) return BadRequest("Enter valid date");
-            var filterAttendence=db.AttendenceEmployees.Where(a=>(a.dayDate>=fromDate && a.dayDate<=toDate)).ToList();
-            return Ok(filterAttendence);
+            if(searchName != "")
+            {
+                if(fromDate.ToString() != "1/1/0001" && toDate.ToString() != "1/1/0001")
+                {
+                    var filterAttendenceByDate = db.AttendenceEmployees.Include(a => a.department).Include(a => a.Emp).Where(a => (a.dayDate >= fromDate && a.dayDate <= toDate)).ToList();
+                    filterAttendenceByDate = filterAttendenceByDate.Where(f => (f.Emp.name.ToLower().Contains(searchName.ToLower()) ||f.department.Name.ToLower().Contains(searchName.ToLower()))).ToList();
+                    return Ok(filterAttendenceByDate);
+                }
+                else
+                {
+                    return Ok(searchNameList);
+                }
+            }
+            else{
+                if (fromDate.ToString() == "1/1/0001" && toDate.ToString() == "1/1/0001") return BadRequest("This Fields Required");
+                var filterAttendenceByDate = db.AttendenceEmployees.Where(a => (a.dayDate >= fromDate && a.dayDate <= toDate)).ToList();
+                return Ok(filterAttendenceByDate);
+            }
         }
+
         [HttpPut("{id:int}")]
         public IActionResult EditEmployeeAttendence(int id,AddAttendenceDTO empAttendence)
         {

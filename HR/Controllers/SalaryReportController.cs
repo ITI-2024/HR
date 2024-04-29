@@ -122,6 +122,7 @@ namespace HR.Controllers
 
                     var SalaryDTo = new SalaryReportDto
                     {
+                        nameMonth = empMonth.Monthofyear.ToString("MMMM"),
                         empName = emp.name,
                         deptName = emp.dept.Name,
                         mainSalary = emp.salary,
@@ -131,9 +132,10 @@ namespace HR.Controllers
                         dedectionHours = settings.deductionHours,
                         extraTimebeforSetting = empMonth.extraTime,
                         discountTimebeforSetting = empMonth.discountTime,
-                        totalExtra=empMonth.extraTime*settings.extraHours,
-                        totalDiscount=empMonth.discountTime*settings.extraHours,
-                        totalNetSalary=empMonth.totalNetSalary
+                        totalExtra = empMonth.extraTime * settings.extraHours,
+                        totalDiscount = empMonth.discountTime * settings.extraHours,
+                        totalNetSalary = empMonth.totalNetSalary,
+                        
 
                     };
                     SalaryReport.Add(SalaryDTo);

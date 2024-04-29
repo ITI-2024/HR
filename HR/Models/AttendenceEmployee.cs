@@ -12,10 +12,11 @@ namespace HR.Models
         [Required]
         [DataType(DataType.Date)]
         public DateOnly dayDate {  get; set; }
-        [Required]
+        
         [DataType(DataType.Time)]
+        
         public TimeOnly? arrivingTime { get; set; }
-        [Required]
+        
         [DataType(DataType.Time)]
         public TimeOnly? leavingTime { get; set; }
 

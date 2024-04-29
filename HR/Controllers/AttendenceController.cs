@@ -85,12 +85,18 @@ namespace HR.Controllers
             return Ok(empAttendence);
         }
 
-        [HttpGet("{name:alpha}")]
+        [HttpGet("{name}")]
         public IActionResult SearchByName(string name) {
-            var employeeAttendence = db.AttendenceEmployees.Include(a => a.Emp).Include(a => a.department).ToList();
-            var filterAttendence= employeeAttendence.Where(a=>(a.department.Name.ToLower().Contains(name.ToLower()) || a.Emp.name.ToLower().Contains(name.ToLower()))).ToList();
-            if (filterAttendence == null|| filterAttendence.Count==0) return BadRequest("Invalid Employee or department name");
-            return Ok(filterAttendence);
+            var filterAttendenceByEmp = db.AttendenceEmployees.Include(a => a.Emp).Where(a => a.Emp.name.ToLower().Contains(name.ToLower())).ToList();
+            var filterAttendenceByDept= db.AttendenceEmployees.Include(a => a.department).Where(a => a.department.Name.ToLower().Contains(name.ToLower())).ToList();
+            if (filterAttendenceByEmp == null || filterAttendenceByEmp.Count == 0)
+            {
+                if (filterAttendenceByDept == null || filterAttendenceByDept.Count == 0)
+                    return BadRequest("Invalid Employee or Department name");
+                return Ok(filterAttendenceByDept);
+            }
+            
+            return Ok(filterAttendenceByEmp);
         }
         [HttpGet("{fromDate:datetime},{toDate:datetime}")]
         public IActionResult SearchByDate(DateOnly fromDate ,DateOnly toDate)

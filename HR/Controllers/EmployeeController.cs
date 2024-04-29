@@ -39,6 +39,10 @@ namespace HR.Controllers
         [HttpPost]
         public IActionResult AddEmployee(Employee emp)
         {
+            var employee = db.Employees.Where(e => e.id == emp.id).FirstOrDefault();
+            if (employee != null) return BadRequest("Employee already exist");
+            employee = db.Employees.Where(e => e.name == emp.name).FirstOrDefault();
+            if (employee != null) return BadRequest("There is another employee with the same name");
             if (emp == null) return NotFound();
             if (ModelState.IsValid)
             {

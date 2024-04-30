@@ -85,13 +85,13 @@ namespace HR.Controllers
             return Ok(empAttendence);
         }
 
-        [HttpGet("{fromDate},{toDate},{name}")]
-        public IActionResult SearchByDate(DateOnly fromDate, DateOnly toDate,string name)
+        [HttpGet("search")]
+        public IActionResult Search(DateOnly? fromDate, DateOnly? toDate,string? name)
         {
             var searchNameList = new List<AttendenceEmployee>();
             searchNameList = [];
             var searchName = "";
-            if (name != "none")
+            if (name != null)
             {
                 var filterAttendenceByEmp = db.AttendenceEmployees.Include(a => a.Emp).Where(a => a.Emp.name.ToLower().Contains(name.ToLower())).ToList();
                 var filterAttendenceByDept = db.AttendenceEmployees.Include(a => a.department).Where(a => a.department.Name.ToLower().Contains(name.ToLower())).ToList();
@@ -111,7 +111,7 @@ namespace HR.Controllers
             if (fromDate > toDate) return BadRequest("Enter valid date");
             if(searchName != "")
             {
-                if(fromDate.ToString() != "1/1/0001" && toDate.ToString() != "1/1/0001")
+                if(fromDate!=null && toDate!=null)
                 {
                     var filterAttendenceByDate = db.AttendenceEmployees.Include(a => a.department).Include(a => a.Emp).Where(a => (a.dayDate >= fromDate && a.dayDate <= toDate)).ToList();
                     filterAttendenceByDate = filterAttendenceByDate.Where(f => (f.Emp.name.ToLower().Contains(searchName.ToLower()) ||f.department.Name.ToLower().Contains(searchName.ToLower()))).ToList();
@@ -123,7 +123,7 @@ namespace HR.Controllers
                 }
             }
             else{
-                if (fromDate.ToString() == "1/1/0001" && toDate.ToString() == "1/1/0001") return BadRequest("This Fields Required");
+                if (fromDate==null && toDate ==null) return BadRequest("This Fields Required");
                 var filterAttendenceByDate = db.AttendenceEmployees.Where(a => (a.dayDate >= fromDate && a.dayDate <= toDate)).ToList();
                 return Ok(filterAttendenceByDate);
             }

@@ -4,6 +4,7 @@ using HR.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HR.Migrations
 {
     [DbContext(typeof(HRDbcontext))]
-    partial class HRDbcontextModelSnapshot : ModelSnapshot
+    [Migration("20240429213339_lasr")]
+    partial class lasr
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -246,7 +249,7 @@ namespace HR.Migrations
                     b.Property<DateOnly>("Monthofyear")
                         .HasColumnType("date");
 
-                    b.Property<int>("absentday")
+                    b.Property<int>("absent")
                         .HasColumnType("int");
 
                     b.Property<int>("attendofDay")

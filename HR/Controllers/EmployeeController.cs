@@ -18,7 +18,7 @@ namespace HR.Controllers
         [HttpGet]
         public ActionResult getAllEmployees()
         {
-            var employees= db.Employees.Include(e=>e.dept).ToList();
+            var employees = db.Employees.Include(e => e.dept).ToList();
             var employeesDTO = employees.Select(e => new EmployeeDepartmentNameDTO
             {
                 NationalID = e.id,
@@ -33,8 +33,15 @@ namespace HR.Controllers
                 LeavingTime = e.leavingTime,
                 Salary = e.salary,
                 DepartmentName = e.dept.Name
-            }).ToList(); 
+            }).ToList();
             return Ok(employeesDTO);
+        }
+        [HttpGet("id")]
+        public IActionResult GetEmplyeeById(string id)
+        {
+            var emp = db.Employees.Where(a => a.id == id).FirstOrDefault();
+            if (emp == null) return NotFound();
+            return Ok(emp);
         }
         [HttpPost]
         public IActionResult AddEmployee(Employee emp)

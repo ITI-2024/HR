@@ -22,18 +22,18 @@ namespace HR.Models
         public virtual DbSet<AttendenceEmployee> AttendenceEmployees { get; set; }
 
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            base.OnModelCreating(modelBuilder);
+        //protected override void OnModelCreating(ModelBuilder modelBuilder)
+        //{
+        //    base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<AttendenceEmployee>()
-                .HasOne(a => a.Emp)                     // Defines a navigation property 'Emp' in AttendenceEmployee
-                .WithMany(e => e.Attendence)             // Indicates that an Employee can have multiple AttendenceEmployee records
-                .HasForeignKey(a => a.idemp)            // Specifies the foreign key property in AttendenceEmployee
-                .OnDelete(DeleteBehavior.Cascade);       // Sets cascade delete behavior for AttendenceEmployee records related to an Employee
+        //    modelBuilder.Entity<AttendenceEmployee>()
+        //        .HasOne(a => a.Emp)                     // Defines a navigation property 'Emp' in AttendenceEmployee
+        //        .WithMany(e => e.Attendence)             // Indicates that an Employee can have multiple AttendenceEmployee records
+        //        .HasForeignKey(a => a.idemp)            // Specifies the foreign key property in AttendenceEmployee
+        //        .OnDelete(DeleteBehavior.Cascade);       // Sets cascade delete behavior for AttendenceEmployee records related to an Employee
 
-            base.OnModelCreating(modelBuilder);          // Calls the base implementation of OnModelCreating
-        }
+        //    base.OnModelCreating(modelBuilder);          // Calls the base implementation of OnModelCreating
+        //}
     }
 
 }

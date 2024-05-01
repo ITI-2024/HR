@@ -48,81 +48,78 @@ namespace HR.Controllers
                 var empAttendece = db.AttendenceEmployees.Where(e => e.idemp == item.id).OrderBy(e => e.dayDate).ToList(); //order Attendec
                 for (int i = 0; i < empAttendece.Count(); i++) // of years and months
                 {
-                    if (empAttendece[i].leavingTime != null && empAttendece[i].arrivingTime != null)
+                    if (i != 0)
                     {
-
-
-                        if (i != 0)
+                        if (empAttendece[i].dayDate.Year > empAttendece[i - 1].dayDate.Year || empAttendece[i].dayDate.Month > empAttendece[i - 1].dayDate.Month)
                         {
-                            if (empAttendece[i].dayDate.Month > empAttendece[i - 1].dayDate.Month || (empAttendece[i].dayDate.Month == 1 && empAttendece[i - 1].dayDate.Month == 12))
+                            var existingMonthEntry = item.AttendencperMonths.FirstOrDefault(month => month.Monthofyear.Month == empAttendece[i - 1].dayDate.Month && month.Monthofyear.Year == empAttendece[i - 1].dayDate.Year);
+                            if (existingMonthEntry == null)
                             {
-                                var existingMonthEntry = item.AttendencperMonths.FirstOrDefault(month => month.Monthofyear.Month == empAttendece[i - 1].dayDate.Month && month.Monthofyear.Year == empAttendece[i - 1].dayDate.Year);
-                                if (existingMonthEntry == null)
-                                {
-                                    //March //March
-                                    informationAttendencperMonth element = new informationAttendencperMonth()
-                                    {
-                                        extraTime = extraTime, //extraTime before add Setting extra
-                                        discountTime = discountTime, //discount before add Setting discount
-                                        Monthofyear = empAttendece[i - 1].dayDate,
-                                        totalNetSalary = Math.Round(item.salary + ((extraTime * settings.extraHours) * salaryPerHour) - ((discountTime * settings.deductionHours) * salaryPerHour), 2),
-                                        attendofDay = attend,
-                                        absentday = absent,
-                                        nameofMonth = empAttendece[i - 1].dayDate.ToString("MMMM", CultureInfo.InvariantCulture)
-
-                                    };
-
-                                    if (item.AttendencperMonths == null)
-                                        item.AttendencperMonths = new List<informationAttendencperMonth>();
-                                    item.AttendencperMonths.Add(element);
+                                //March //March
+                                informationAttendencperMonth element = new informationAttendencperMonth();
+                                element.extraTime = extraTime; //extraTime before add Setting extra
+                                element.discountTime = discountTime; //discount before add Setting discount
+                                element.Monthofyear = empAttendece[i - 1].dayDate;
+                                element.totalNetSalary = Math.Round(item.salary + ((extraTime * settings.extraHours) * salaryPerHour) - ((discountTime * settings.deductionHours) * salaryPerHour), 2);
+                                element.attendofDay = attend;
+                                element.absentday = absent;
+                                element.nameofMonth = empAttendece[i - 1].dayDate.ToString("MMMM", CultureInfo.InvariantCulture);
 
 
-                                    db.SaveChanges();
-                                    extraTime = 0;
-                                    discountTime = 0;
-                                    attend = 0;
-                                    absent = 0;
+                                if (item.AttendencperMonths == null)
+                                    item.AttendencperMonths = new List<informationAttendencperMonth>();
+                                item.AttendencperMonths.Add(element);
+                                db.SaveChanges();
+                                extraTime = 0;
+                                discountTime = 0;
+                                attend = 0;
+                                absent = 0;
 
-                                }
-
-                            }
-                            else
-                            {
-                                attend += 1;
-                                if (empAttendece[i].leavingTime != null && empAttendece[i].arrivingTime != null)
-                                {
-
-                                    if (empAttendece[i].arrivingTime > item.arrivingTime)
-                                    { discountTime += Math.Abs(empAttendece[i].arrivingTime.Value.Hour - item.arrivingTime.Hour); }
-                                    if (empAttendece[i].leavingTime > item.leavingTime)
-                                    { extraTime += Math.Abs(empAttendece[i].leavingTime.Value.Hour - item.leavingTime.Hour); }
-                                    if (empAttendece[i].leavingTime < item.leavingTime)
-                                    { discountTime += Math.Abs(empAttendece[i].leavingTime.Value.Hour - item.leavingTime.Hour); }
-                                }
                             }
 
                         }
                         else
                         {
-                            attend += 1;
-                            if (empAttendece[i].arrivingTime > item.arrivingTime)
-                                discountTime += Math.Abs(empAttendece[i].arrivingTime.Value.Hour - item.arrivingTime.Hour);
-                            if (empAttendece[i].leavingTime > item.leavingTime)
+                            if (empAttendece[i].leavingTime != null && empAttendece[i].arrivingTime != null)
                             {
-                                extraTime += Math.Abs(empAttendece[i].leavingTime.Value.Hour - item.leavingTime.Hour);
-                            }
-                            if (empAttendece[i].leavingTime < item.leavingTime)
-                            { discountTime += Math.Abs(empAttendece[i].leavingTime.Value.Hour - item.leavingTime.Hour); }
 
+                                attend += 1;
+                                if (empAttendece[i].arrivingTime > item.arrivingTime)
+                                { discountTime += Math.Abs(empAttendece[i].arrivingTime.Value.Hour - item.arrivingTime.Hour); }
+                                if (empAttendece[i].leavingTime > item.leavingTime)
+                                { extraTime += Math.Abs(empAttendece[i].leavingTime.Value.Hour - item.leavingTime.Hour); }
+                                if (empAttendece[i].leavingTime < item.leavingTime)
+                                { discountTime += Math.Abs(empAttendece[i].leavingTime.Value.Hour - item.leavingTime.Hour); }
+                            }
+                            else
+                            {
+                                absent += 1;
+                            }
                         }
+
                     }
                     else
                     {
-                        absent += 1;
+                        if (empAttendece[i].leavingTime != null && empAttendece[i].arrivingTime != null)
+                        {
+
+                            attend += 1;
+                            if (empAttendece[i].arrivingTime > item.arrivingTime)
+                            { discountTime += Math.Abs(empAttendece[i].arrivingTime.Value.Hour - item.arrivingTime.Hour); }
+                            if (empAttendece[i].leavingTime > item.leavingTime)
+                            { extraTime += Math.Abs(empAttendece[i].leavingTime.Value.Hour - item.leavingTime.Hour); }
+                            if (empAttendece[i].leavingTime < item.leavingTime)
+                            { discountTime += Math.Abs(empAttendece[i].leavingTime.Value.Hour - item.leavingTime.Hour); }
+                        }
+                        else
+                        {
+                            absent += 1;
+                        }
                     }
+
                 }
                 //////////////update 
-                if (item.AttendencperMonths != null && DateOnly.FromDateTime(DateTime.Now).Day == 1 && item.AttendencperMonths[item.AttendencperMonths.Count - 1].Monthofyear.Month != ((DateOnly.FromDateTime(DateTime.Now).Month) - 1))
+                if (item.AttendencperMonths != null && item.AttendencperMonths.Count != 0 && DateOnly.FromDateTime(DateTime.Now).Day == 1 && item.AttendencperMonths[item.AttendencperMonths.Count - 1].Monthofyear.Month != ((DateOnly.FromDateTime(DateTime.Now).Month) - 1))
                 {
 
                     informationAttendencperMonth element = new informationAttendencperMonth()
@@ -156,6 +153,7 @@ namespace HR.Controllers
                     var SalaryDTo = new SalaryReportDto
                     {
                         nameMonth = empMonth.Monthofyear.ToString("MMMM"),
+                        nameYear = empMonth.Monthofyear.Year,
                         empName = emp.name,
                         deptName = emp.dept.Name,
                         mainSalary = emp.salary,
@@ -196,6 +194,7 @@ namespace HR.Controllers
                     SalaryReportDto salaryReportDto = new SalaryReportDto()
                     {
                         nameMonth = item.Monthofyear.ToString("MMMM"),
+                        nameYear = item.Monthofyear.Year,
                         empName = emp.name,
                         deptName = emp.dept.Name,
                         mainSalary = emp.salary,
@@ -242,6 +241,7 @@ namespace HR.Controllers
                 SalaryReportDto salaryReportDto = new SalaryReportDto()
                 {
                     nameMonth = item.Monthofyear.ToString("MMMM"),
+                    nameYear = item.Monthofyear.Year,
                     empName = idemp.name,
                     deptName = idemp.dept.Name,
                     mainSalary = idemp.salary,
@@ -302,7 +302,7 @@ namespace HR.Controllers
             }
 
             var setting = db.PublicSettings.FirstOrDefault();
-            
+
 
             foreach (var item in reportResult)
             {
@@ -310,6 +310,7 @@ namespace HR.Controllers
                 SalaryReportDto salaryReportDto = new SalaryReportDto()
                 {
                     nameMonth = item.Monthofyear.ToString("MMMM"),
+                    nameYear = item.Monthofyear.Year,
                     empName = idemp.name,
                     deptName = idemp.dept.Name,
                     mainSalary = idemp.salary,

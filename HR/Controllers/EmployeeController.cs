@@ -60,15 +60,40 @@ namespace HR.Controllers
             db.SaveChanges();
             return Ok(emp);
         }
-        [HttpDelete("{id}")]
-        public IActionResult DeleteEmployee(string id)
-        {
-            var emp = db.Employees.Find(id);
-            if (emp is null) return NotFound();
-            db.Employees.Remove(emp);
-            db.SaveChanges();
-            return Ok(emp);
+        //[HttpDelete("{id}")]
+        //public IActionResult DeleteEmployee(string id)
+        //{
+        //    var emp = db.Employees.Find(id);
+        //    if (emp is null) return NotFound();
+        //    db.Employees.Remove(emp);
+        //    db.SaveChanges();
+        //    return Ok(emp);
 
+        //}
+        [HttpDelete("employees/{id}")]
+        public async Task<IActionResult> DeleteEmployees(string id)
+        {
+            var employee = await db.Employees
+                .Include(e => e.Attendence)
+                .Include(a => a.AttendencperMonths)
+                .FirstOrDefaultAsync(e => e.id == id);
+
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
+            // Remove related records
+            foreach (var attendance in employee.AttendencperMonths)
+            {
+                db.Attendencpermonth.RemoveRange(attendance);
+            }
+            db.AttendenceEmployees.RemoveRange(employee.Attendence);
+            db.Employees.Remove(employee);
+
+            await db.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }

@@ -6,7 +6,7 @@ namespace HR.Models
 {
     public class informationAttendencperMonth
     {
-        [Key]
+        public int id { get; set; }
         public DateOnly Monthofyear { get; set; }
 
         public int extraTime { get; set; } //before public sting

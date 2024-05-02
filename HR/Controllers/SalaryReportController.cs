@@ -183,7 +183,7 @@ namespace HR.Controllers
         public IActionResult SearchByname(string name)
         {
             string fullname = name;
-            var empReport = db.Employees.Include(e => e.dept).Include(e => e.Attendence).Include(e => e.AttendencperMonths).Where(e => e.name.ToLower() == fullname.ToLower()).ToList();
+            var empReport = db.Employees.Include(e => e.dept).Include(e => e.Attendence).Include(e => e.AttendencperMonths).Where(e => e.name.ToLower().Contains(fullname.ToLower())).ToList();
             var setting = db.PublicSettings.FirstOrDefault();
             if (empReport == null) return NotFound("please Enter ValidName");
             List<SalaryReportDto> SalaryFilterByName = new List<SalaryReportDto>();
@@ -291,7 +291,7 @@ namespace HR.Controllers
 
             // Filter the empReport based on parameters
             var reportResult = empReport.Where(e =>
-                (name == null || e.name == name) &&             // Filter by name if provided
+                (name == null || e.name.ToLower().Contains(name.ToLower())) &&             // Filter by name if provided
                 (year == null || e.AttendencperMonths.Any(a => a.Monthofyear.Year == year)) &&  // Filter by year if provided
                 (month == null || e.AttendencperMonths.Any(a => a.nameofMonth.ToLower() == month.ToLower()))  // Filter by month if provided
             ).SelectMany(e => e.AttendencperMonths).ToList();  // Flatten the list of AttendencperMonths

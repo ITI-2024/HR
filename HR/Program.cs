@@ -70,7 +70,7 @@ namespace HR
             app.UseAuthentication();
 
             app.UseAuthorization();
-
+            app.UseCors("MyPolicy");
 
             app.MapControllers();
 

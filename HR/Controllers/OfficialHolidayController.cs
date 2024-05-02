@@ -45,9 +45,10 @@ namespace HR.Controllers
         [HttpPut("Edit")]
         public IActionResult EditHoliday(HolidaySetting Holiday)
         {
-            var officialHoliday = db.Holidays.Where(h => h.id == Holiday.id).FirstOrDefault();
+                var officialHoliday = db.Holidays.Where(h => h.id == Holiday.id).FirstOrDefault();
             if (officialHoliday == null) return NotFound();
             officialHoliday.HolidayDate=Holiday.HolidayDate;
+            officialHoliday.Name = Holiday.Name;
             officialHoliday.dayName = Holiday.HolidayDate.DayOfWeek.ToString();
             db.SaveChanges();
             return Ok(officialHoliday);

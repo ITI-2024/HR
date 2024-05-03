@@ -1,4 +1,5 @@
-﻿using HR.ViewModel;
+﻿using HR.Models;
+using HR.ViewModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,9 +11,11 @@ namespace HR.Controllers
     public class RoleNameController : ControllerBase
     {
         public RoleManager<IdentityRole> roleManager { get; }
-        public RoleNameController(RoleManager<IdentityRole> roleManager)
+        public readonly HRDbcontext dbl;
+        public RoleNameController(RoleManager<IdentityRole> roleManager, HRDbcontext _dbl)
         {
             this.roleManager = roleManager;
+            this.dbl = _dbl;
         }
         [HttpPost]
         public async Task<IActionResult> addRole(RoleName vm)
@@ -32,8 +35,15 @@ namespace HR.Controllers
                     {
                         ModelState.AddModelError("", e.Description);
                     }
-                } }
-            return BadRequest();
+                }
             }
+            return BadRequest();
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetRoles()
+        {
+            var roles = dbl.Roles.ToList();
+            return Ok(roles);
+        }
     }
 }

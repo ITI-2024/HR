@@ -6,7 +6,7 @@ namespace HR.Models
 {
     public class informationAttendencperMonth
     {
-        [Key]
+        public int id { get; set; }
         public DateOnly Monthofyear { get; set; }
 
         public int extraTime { get; set; } //before public sting
@@ -16,8 +16,10 @@ namespace HR.Models
         public double totalNetSalary { get; set; }
 
         public int attendofDay { get; set; }
+
         public string nameofMonth { get; set; }
-        public int absent { get; set; }
+
+        public int absentday { get; set; }
 
         [ForeignKey("Emp")]
         public string? idemp { get; set; }

@@ -47,6 +47,13 @@ namespace HR
 
 
             });
+            builder.Services.AddCors(corsOptions =>
+            {
+                corsOptions.AddPolicy("MyPolicy", corsOptPolicy =>
+                {
+                    corsOptPolicy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+                });
+            });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -63,7 +70,7 @@ namespace HR
             app.UseAuthentication();
 
             app.UseAuthorization();
-
+            app.UseCors("MyPolicy");
 
             app.MapControllers();
 

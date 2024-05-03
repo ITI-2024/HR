@@ -18,7 +18,7 @@ namespace HR.Controllers
         [HttpGet]
         public ActionResult getAllEmployees()
         {
-            var employees= db.Employees.Include(e=>e.dept).ToList();
+            var employees = db.Employees.Include(e => e.dept).ToList();
             var employeesDTO = employees.Select(e => new EmployeeDepartmentNameDTO
             {
                 NationalID = e.id,
@@ -33,8 +33,15 @@ namespace HR.Controllers
                 LeavingTime = e.leavingTime,
                 Salary = e.salary,
                 DepartmentName = e.dept.Name
-            }).ToList(); 
+            }).ToList();
             return Ok(employeesDTO);
+        }
+        [HttpGet("id")]
+        public IActionResult GetEmplyeeById(string id)
+        {
+            var emp = db.Employees.Where(a => a.id == id).FirstOrDefault();
+            if (emp == null) return NotFound();
+            return Ok(emp);
         }
         [HttpPost]
         public IActionResult AddEmployee(Employee emp)
@@ -60,15 +67,40 @@ namespace HR.Controllers
             db.SaveChanges();
             return Ok(emp);
         }
-        [HttpDelete("{id}")]
-        public IActionResult DeleteEmployee(string id)
-        {
-            var emp = db.Employees.Find(id);
-            if (emp is null) return NotFound();
-            db.Employees.Remove(emp);
-            db.SaveChanges();
-            return Ok(emp);
+        //[HttpDelete("{id}")]
+        //public IActionResult DeleteEmployee(string id)
+        //{
+        //    var emp = db.Employees.Find(id);
+        //    if (emp is null) return NotFound();
+        //    db.Employees.Remove(emp);
+        //    db.SaveChanges();
+        //    return Ok(emp);
 
+        //}
+        [HttpDelete("employees/{id}")]
+        public async Task<IActionResult> DeleteEmployees(string id)
+        {
+            var employee = await db.Employees
+                .Include(e => e.Attendence)
+                .Include(a => a.AttendencperMonths)
+                .FirstOrDefaultAsync(e => e.id == id);
+
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
+            // Remove related records
+            foreach (var attendance in employee.AttendencperMonths)
+            {
+                db.Attendencpermonth.RemoveRange(attendance);
+            }
+            db.AttendenceEmployees.RemoveRange(employee.Attendence);
+            db.Employees.Remove(employee);
+
+            await db.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }

@@ -3,7 +3,7 @@
     public class SalaryReportDto
     {
         public string nameMonth { get; set; }
-
+        public int nameYear { get; set; }
         public string empName { get; set; }
         public string deptName { get; set; }
         public double mainSalary { get; set; }

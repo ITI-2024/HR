@@ -50,6 +50,7 @@ namespace HR.Controllers
                 if (officialHoliday != null) return BadRequest("This day is official holiday");
                 var publicSetting = db.PublicSettings.FirstOrDefault();
                 if (publicSetting != null)
+                    
                 {
                     var firstHoliday = publicSetting.firstWeekend;
                     var secondHoliday = publicSetting.secondWeekend;

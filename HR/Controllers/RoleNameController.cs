@@ -18,7 +18,7 @@ namespace HR.Controllers
             this.roleManager = roleManager;
             this.db = _dbl;
         }
-      //  [HttpPost]
+        //  [HttpPost]
         //public async Task<IActionResult> addRole(RoleName vm)
         //{
         //    if (ModelState.IsValid)
@@ -56,6 +56,20 @@ namespace HR.Controllers
         {
             var roles = db.Roles.ToList();
             return Ok(roles);
+        }
+        [HttpGet("{id}")]
+        public IActionResult GetRoleById(string id) {
+            var role = db.Roles.FirstOrDefault(x => x.Id==id);
+            return Ok(role);
+        }
+        [HttpDelete("{id}")]
+        public IActionResult DeleteRoleById(string id)
+        {
+            var role = db.Roles.FirstOrDefault(y => y.Id==id);
+            if(role == null) return NotFound();
+            db.Roles.Remove(role);
+            db.SaveChanges();
+            return Ok(role);
         }
     }
 }

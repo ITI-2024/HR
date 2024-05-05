@@ -37,7 +37,7 @@ namespace HR.Controllers
             return Ok(employeesDTO);
         }
         [HttpGet("id")]
-        public IActionResult GetEmplyeeById(string id)
+        public IActionResult GetEmployeeById(string id)
         {
             var emp = db.Employees.Where(a => a.id == id).FirstOrDefault();
             if (emp == null) return NotFound();

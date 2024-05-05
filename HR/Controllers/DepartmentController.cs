@@ -41,7 +41,14 @@ namespace HR.Controllers
             return BadRequest();
 
         }
-        
+        [HttpGet("id")]
+        public IActionResult GetDeptById(int id)
+        {
+            var dept = db.Departments.Where(d => d.Id==id).FirstOrDefault();
+            if (dept == null) return NotFound();
+            return Ok(dept);
+        }
+
 
     }
 }

@@ -4,6 +4,7 @@ using HR.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HR.Migrations
 {
     [DbContext(typeof(HRDbcontext))]
-    partial class HRDbcontextModelSnapshot : ModelSnapshot
+    [Migration("20240505193804_v5")]
+    partial class v5
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,7 +82,7 @@ namespace HR.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<int?>("roleId")
+                    b.Property<int>("roleId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -481,7 +484,9 @@ namespace HR.Migrations
                 {
                     b.HasOne("HR.Models.RoleName", "RoleNames")
                         .WithMany()
-                        .HasForeignKey("roleId");
+                        .HasForeignKey("roleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("RoleNames");
                 });

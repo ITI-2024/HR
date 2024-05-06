@@ -1,9 +1,13 @@
-﻿using HR.Helper;
+﻿using HR.Contant;
+using HR.Helper;
 using HR.Models;
+using HR.Repository;
 using HR.ViewModel;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Update;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using System.Data;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -15,14 +19,16 @@ namespace HR.serviec
         private readonly UserManager<ApplictionUsers> _userManager;
         private readonly Jwt _Jwt;
         private readonly RoleManager<IdentityRole> _roleManager;
-        public AuthSerives(UserManager<ApplictionUsers>_userManager, IOptions<Jwt>jwt,RoleManager<IdentityRole>_roleManager) 
+        private readonly IRoleNameRepository roleNameRepository;
+        private string _roleName;
+        public AuthSerives(UserManager<ApplictionUsers>_userManager, IOptions<Jwt>jwt,RoleManager<IdentityRole>_roleManager, IRoleNameRepository _roleNameRepository) 
         {
 
             this._userManager = _userManager;
             this._Jwt = jwt.Value;
             this._roleManager = _roleManager;
 
-
+            this.roleNameRepository = _roleNameRepository;
 
         }
 
@@ -43,8 +49,19 @@ namespace HR.serviec
             authModel.Username = user.UserName;
             var RoleList = await _userManager.GetRolesAsync(user);
             authModel.Roles = RoleList.ToList();
+            var roleName = await GetRoleName(user.roleId);
+            authModel.RoleName = roleName;
             return authModel;
 
+        }
+        private async Task<string> GetRoleName(int? roleId)
+        {
+            if (roleId.HasValue)
+            {
+                var roleName = await roleNameRepository.GetRoleNameById(roleId.Value);
+                return roleName?.GroupName ?? string.Empty;
+            }
+            return string.Empty;
         }
 
 
@@ -63,6 +80,7 @@ namespace HR.serviec
                 UserName = model.Username,
                 Email = model.Email,
                 Fullname = model.Fullname,
+                roleId= model.Roleid    
                 
 
             };
@@ -78,41 +96,91 @@ namespace HR.serviec
                 return new AuthModel { Message=errors};
 
             }
-            await _userManager.AddToRoleAsync(user, model.Rolename);
+            if (!await _roleManager.RoleExistsAsync(UserRole.User.ToString()))
+            {
+                await _roleManager.CreateAsync(new IdentityRole(UserRole.User.ToString()));
+            }
+            await _userManager.AddToRoleAsync(user, UserRole.User.ToString());
+            if (user.roleId != null)
+            {
+                List<string> roles =await AddUserRoles(user.roleId.Value);
+                foreach(var role in roles)
+                {
+                    await _userManager.AddToRoleAsync(user, role);
+                }
+
+            }
+
+            var userRoles = await _userManager.GetRolesAsync(user);
             var JwtSecurityToken = await CreateJwtToken(user);
             return new AuthModel
             {
                 Email = user.Email,
                 ExpiresOn = JwtSecurityToken.ValidTo,
                 IsAuthenticated = true,
-                Roles = new List<string> { model.Rolename },
+                Roles = userRoles.ToList(),
                 Token = new JwtSecurityTokenHandler().WriteToken(JwtSecurityToken),
                 Username = user.UserName,
-                Message = "it is created"
+                Message = "it is created",
+                RoleName=_roleName
             };
 
 
         }
-       private async Task<JwtSecurityToken> CreateJwtToken(ApplictionUsers user)
+    
+        public async Task<List<string>> AddUserRoles(int roleId)
         {
-            var UserClaims = await _userManager.GetClaimsAsync(user);
-            var roles = await _userManager.GetRolesAsync(user);
-            var roleClaims = new List<Claim>();
-            foreach (var role in roles)
+            List<string> nameoftableperm = new List<string>();
+
+            RoleName roleName = await roleNameRepository.GetRoleNameById(roleId);
+            _roleName = roleName.GroupName;
+            if (roleName is not null)
             {
-                roleClaims.Add(new Claim("roles", role));
+                foreach (var perm in roleName.Permissions)
+                {
+                    var p = PermissionGeneret.GeneratePermissionsList(perm.name, perm.create, perm.update, perm.delete, perm.view);
+                   // var p = PermissionGeneret.GeneratePermissionsList(perm.name, false, true, false, true);
+                    foreach (var per in p)
+                    {
+                        if (!await _roleManager.RoleExistsAsync(per))
+                            await _roleManager.CreateAsync(new IdentityRole(per));
+                        nameoftableperm.Add(per);
+                    }
+                   
+                }
+
             }
-            var claims = new[]
-            {
+            return nameoftableperm;
+        }
+
+        private async Task<JwtSecurityToken> CreateJwtToken(ApplictionUsers user)
+        {
+ 
+            var roles = await _userManager.GetRolesAsync(user);
+            var claims = new List<Claim>()
+                {
+
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim("uid", user.Id)
+                new Claim("uid", user.Id),
+                
 
+            };
+  
+            foreach (var roleName in roles)
+            {
+       
+                var role = await _roleManager.FindByNameAsync(roleName);
+                if(role != null)
+                {
+              
+                            claims.Add(new Claim(ClaimTypes.Role, roleName));
+                       
+                    }
+                
             }
-            .Union(UserClaims)
-            .Union(roleClaims);
-
+      
             SecurityKey symmetricSecrityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_Jwt?.key));
 
             SigningCredentials SigningCredintials = new SigningCredentials(symmetricSecrityKey, SecurityAlgorithms.HmacSha256);
@@ -127,5 +195,6 @@ namespace HR.serviec
 
             return JwtSecurityToken;
         }
+       
     }
 }

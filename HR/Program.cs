@@ -1,29 +1,38 @@
 
 
 using HR.Helper;
+using HR.Migrations;
 using HR.Models;
+using HR.Repository;
+using HR.Seed;
 using HR.serviec;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Writers;
 using System.Text;
 
 namespace HR
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
       
             builder.Services.AddControllers();
+
             builder.Services.AddDbContext<HRDbcontext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("Mycon")));
-            builder.Services.AddIdentity<ApplictionUsers, IdentityRole>().AddEntityFrameworkStores<HRDbcontext>();
+            builder.Services.AddIdentity<ApplictionUsers, IdentityRole>().AddEntityFrameworkStores<HRDbcontext>()
+           .AddDefaultTokenProviders().AddRoles<IdentityRole>();
            builder.Services.Configure<Jwt>(builder.Configuration.GetSection("Jwt"));
             builder.Services.AddScoped<IAuthServies, AuthSerives>();
+            builder.Services.AddScoped<IRoleNameRepository, RoleNameRepository>();
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -54,10 +63,48 @@ namespace HR
                     corsOptPolicy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
                 });
             });
+            // Swagger Configuration
+            builder.Services.AddSwaggerGen(swagger =>
+            {
+                // To Enable authorization using Swagger (JWT)    
+                swagger.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Enter 'Bearer' [space] and then your valid token in the text input below.\r\n\r\nExample: \"Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9\"",
+                });
+                swagger.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                    new OpenApiSecurityScheme
+                    {
+                    Reference = new OpenApiReference
+                    {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                    }
+                    },
+                    new string[] {}
+                    }
+                });
+            });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
             var app = builder.Build();
+            
+            using (var scope = app.Services.CreateScope())
+            {
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplictionUsers>>();
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                await DefaultRole.SeedAsync(roleManager);
+                await UserSeed.SeedBasicUserAsync(userManager, roleManager);
+     
+            }
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -74,7 +121,7 @@ namespace HR
 
             app.MapControllers();
 
-            app.Run();
+            app.Run(); ;
         }
     }
 }

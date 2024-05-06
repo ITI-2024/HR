@@ -1,5 +1,6 @@
 ﻿using HR.serviec;
 using HR.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Win32;
@@ -8,6 +9,7 @@ namespace HR.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+   
     public class AuthController : ControllerBase
     {
         private readonly IAuthServies _authService;

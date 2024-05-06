@@ -127,6 +127,20 @@ namespace HR.Controllers
             await _roleNameRepository.RoleNameDelete(roleToDelete);
             return Ok();
         }
+        [HttpGet("{id}")]
+        public IActionResult GetRoleById(string id) {
+            var role = db.Roles.FirstOrDefault(x => x.Id==id);
+            return Ok(role);
+        }
+        [HttpDelete("{id}")]
+        public IActionResult DeleteRoleById(string id)
+        {
+            var role = db.Roles.FirstOrDefault(y => y.Id==id);
+            if(role == null) return NotFound();
+            db.Roles.Remove(role);
+            db.SaveChanges();
+            return Ok(role);
+        }
     }
 
 

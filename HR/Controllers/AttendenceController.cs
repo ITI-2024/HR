@@ -89,13 +89,14 @@ namespace HR.Controllers
         [HttpGet("search")]
         public IActionResult Search(DateOnly? fromDate, DateOnly? toDate,string? name)
         {
+            var SearchResult = new List<AttendeceWithDepartmentDTO>();
             var searchNameList = new List<AttendenceEmployee>();
             searchNameList = [];
             var searchName = "";
             if (name != null)
             {
-                var filterAttendenceByEmp = db.AttendenceEmployees.Include(a => a.Emp).Where(a => a.Emp.name.ToLower().Contains(name.ToLower())).ToList();
-                var filterAttendenceByDept = db.AttendenceEmployees.Include(a => a.department).Where(a => a.department.Name.ToLower().Contains(name.ToLower())).ToList();
+                var filterAttendenceByEmp = db.AttendenceEmployees.Include(a=>a.department).Include(a => a.Emp).Where(a => a.Emp.name.ToLower().Contains(name.ToLower())).ToList();
+                var filterAttendenceByDept = db.AttendenceEmployees.Include(a => a.department).Include(a=>a.Emp).Where(a => a.department.Name.ToLower().Contains(name.ToLower())).ToList();
                 if (filterAttendenceByEmp == null || filterAttendenceByEmp.Count == 0)
                 {
                     if (filterAttendenceByDept == null || filterAttendenceByDept.Count == 0)
@@ -116,18 +117,49 @@ namespace HR.Controllers
                 {
                     var filterAttendenceByDate = db.AttendenceEmployees.Include(a => a.department).Include(a => a.Emp).Where(a => (a.dayDate >= fromDate && a.dayDate <= toDate)).ToList();
                     filterAttendenceByDate = filterAttendenceByDate.Where(f => (f.Emp.name.ToLower().Contains(searchName.ToLower()) ||f.department.Name.ToLower().Contains(searchName.ToLower()))).ToList();
-                    return Ok(filterAttendenceByDate);
+                    SearchResult = filterAttendenceByDate.Select(a => new AttendeceWithDepartmentDTO
+                    {
+                        ID = a.Id,
+                        DepartmentName = a.department.Name,
+                        EmployeeName = a.Emp.name,
+                        ArrivingTime = a.arrivingTime,
+                        LeavingTime = a.leavingTime,
+                        DayDate = a.dayDate,
+                        DayName = a.dayDate.DayOfWeek.ToString()
+
+                    }).OrderBy(a => a.DayDate).ToList();
                 }
                 else
                 {
-                    return Ok(searchNameList);
+                    SearchResult = searchNameList.Select(a => new AttendeceWithDepartmentDTO
+                    {
+                        ID = a.Id,
+                        DepartmentName = a.department.Name,
+                        EmployeeName = a.Emp.name,
+                        ArrivingTime = a.arrivingTime,
+                        LeavingTime = a.leavingTime,
+                        DayDate = a.dayDate,
+                        DayName = a.dayDate.DayOfWeek.ToString()
+
+                    }).OrderBy(a => a.DayDate).ToList();
                 }
             }
             else{
                 if (fromDate==null && toDate ==null) return BadRequest("This Fields Required");
-                var filterAttendenceByDate = db.AttendenceEmployees.Where(a => (a.dayDate >= fromDate && a.dayDate <= toDate)).ToList();
-                return Ok(filterAttendenceByDate);
+                var filterAttendenceByDate = db.AttendenceEmployees.Include(a=>a.department).Include(a=>a.Emp).Where(a => (a.dayDate >= fromDate && a.dayDate <= toDate)).ToList();
+                SearchResult = filterAttendenceByDate.Select(a => new AttendeceWithDepartmentDTO
+                {
+                    ID = a.Id,
+                    DepartmentName = a.department.Name,
+                    EmployeeName = a.Emp.name,
+                    ArrivingTime = a.arrivingTime,
+                    LeavingTime = a.leavingTime,
+                    DayDate = a.dayDate,
+                    DayName = a.dayDate.DayOfWeek.ToString()
+
+                }).OrderBy(a => a.DayDate).ToList();
             }
+            return Ok(SearchResult);
         }
 
         [HttpPut("{id:int}")]

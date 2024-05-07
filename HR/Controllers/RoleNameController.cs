@@ -39,26 +39,30 @@ namespace HR.Controllers
         public async Task<IActionResult> CreateRoleName(RoleDTO roleDto)
         {
             if (ModelState.IsValid)
-            {
+            { 
                 RoleName roleName = new RoleName
                 {
                     GroupName = roleDto.Name,
                     Permissions = new List<permission>(),
                 };
-                ////
-                foreach (var permissionDto in roleDto.Permissions)
-                {
-                    // Convert PermissionDTO to Permission entity
-                    permission perm = new permission
-                    {
-                        name = permissionDto.name,
-                        create = permissionDto.Create ?? false,
-                        delete = permissionDto.Delete ?? false,
-                        view = permissionDto.View ?? false,
-                        update = permissionDto.Update ?? false
-                    };
 
-                    roleName.Permissions.Add(perm);
+                  ////
+                    foreach (var permissionDto in roleDto.Permissions)
+                    {
+                        // Convert PermissionDTO to Permission entity
+                        permission perm = new permission
+                        {
+                            name = permissionDto.name,
+                            create = permissionDto.Create ?? false,
+                            delete = permissionDto.Delete ?? false,
+                            view = permissionDto.View ?? false,
+                            update = permissionDto.Update ?? false
+                        };
+
+
+                        roleName.Permissions.Add(perm);
+                    
+
                 }
                 RoleName createdRole = await _roleNameRepository.RoleNameCreate(roleName);
                 if (createdRole != null)
@@ -127,21 +131,21 @@ namespace HR.Controllers
             await _roleNameRepository.RoleNameDelete(roleToDelete);
             return Ok();
         }
-        [HttpGet("{id}")]
-        public IActionResult GetRoleById(string id) {
-            var role = db.Roles.FirstOrDefault(x => x.Id==id);
-            return Ok(role);
-        }
-        [HttpDelete("{id}")]
-        public IActionResult DeleteRoleById(string id)
-        {
-            var role = db.Roles.FirstOrDefault(y => y.Id==id);
-            if(role == null) return NotFound();
-            db.Roles.Remove(role);
-            db.SaveChanges();
-            return Ok(role);
-        }
-    }
+    //    [HttpGet("{id}")]
+    //    public IActionResult GetRoleById(string id) {
+    //        var role = db.Roles.FirstOrDefault(x => x.Id==id);
+    //        return Ok(role);
+    //    }
+    //    [HttpDelete("{id}")]
+    //    public IActionResult DeleteRoleById(string id)
+    //    {
+    //        var role = db.Roles.FirstOrDefault(y => y.Id==id);
+    //        if(role == null) return NotFound();
+    //        db.Roles.Remove(role);
+    //        db.SaveChanges();
+    //        return Ok(role);
+    //    }
+   }
 
 
 

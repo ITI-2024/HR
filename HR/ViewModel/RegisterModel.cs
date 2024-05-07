@@ -14,8 +14,8 @@ namespace HR.ViewModel
         public string Password { get; set; }
         [Required, StringLength(50)]
         public string Email { get; set; }
-        [Required, StringLength(50)]
-        public string Rolename { get; set; }
+        [Required]
+        public int Roleid { get; set; }
 
     }
 }

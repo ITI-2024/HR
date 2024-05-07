@@ -6,6 +6,6 @@ namespace HR.serviec
     {
         Task<AuthModel> RegisterAsync(RegisterModel model);
         Task<AuthModel> LoginAsync(Login model);
-        //Task<AuthModel>AdminAsync
+        
     }
 }

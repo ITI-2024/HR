@@ -4,3 +4,8 @@ V1
 2:OnModelCreat,K
 2:builder,w
 2:gs,Z
+2:CreateJwtToken,Q
+2:user,E
+2:roles,e
+2:claims,QO
+2:roleName,x

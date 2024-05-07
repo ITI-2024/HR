@@ -4,6 +4,7 @@ using HR.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HR.Migrations
 {
     [DbContext(typeof(HRDbcontext))]
-    partial class HRDbcontextModelSnapshot : ModelSnapshot
+    [Migration("20240505020545_addrole")]
+    partial class addrole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -79,7 +82,7 @@ namespace HR.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<int?>("roleId")
+                    b.Property<int>("roleId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -328,18 +331,16 @@ namespace HR.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("roleid")
+                    b.Property<bool?>("read")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("roleid")
                         .HasColumnType("int");
 
                     b.Property<bool?>("update")
                         .HasColumnType("bit");
 
-                    b.Property<bool?>("view")
-                        .HasColumnType("bit");
-
                     b.HasKey("id");
-
-                    b.HasIndex("roleid");
 
                     b.ToTable("Permissions");
                 });
@@ -477,13 +478,30 @@ namespace HR.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("RoleNamepermission", b =>
+                {
+                    b.Property<int>("Permissionsid")
+                        .HasColumnType("int");
+
+                    b.Property<int>("roleNameId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Permissionsid", "roleNameId");
+
+                    b.HasIndex("roleNameId");
+
+                    b.ToTable("RoleNamepermission");
+                });
+
             modelBuilder.Entity("HR.Models.ApplictionUsers", b =>
                 {
-                    b.HasOne("HR.Models.RoleName", "RoleNames")
+                    b.HasOne("HR.Models.RoleName", "RoleName")
                         .WithMany()
-                        .HasForeignKey("roleId");
+                        .HasForeignKey("roleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("RoleNames");
+                    b.Navigation("RoleName");
                 });
 
             modelBuilder.Entity("HR.Models.AttendenceEmployee", b =>
@@ -517,15 +535,6 @@ namespace HR.Migrations
                         .HasForeignKey("idemp");
 
                     b.Navigation("Emp");
-                });
-
-            modelBuilder.Entity("HR.Models.permission", b =>
-                {
-                    b.HasOne("HR.Models.RoleName", "roleName")
-                        .WithMany("Permissions")
-                        .HasForeignKey("roleid");
-
-                    b.Navigation("roleName");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -579,16 +588,26 @@ namespace HR.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("RoleNamepermission", b =>
+                {
+                    b.HasOne("HR.Models.permission", null)
+                        .WithMany()
+                        .HasForeignKey("Permissionsid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HR.Models.RoleName", null)
+                        .WithMany()
+                        .HasForeignKey("roleNameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("HR.Models.Employee", b =>
                 {
                     b.Navigation("Attendence");
 
                     b.Navigation("AttendencperMonths");
-                });
-
-            modelBuilder.Entity("HR.Models.RoleName", b =>
-                {
-                    b.Navigation("Permissions");
                 });
 
             modelBuilder.Entity("HR.Models.department", b =>

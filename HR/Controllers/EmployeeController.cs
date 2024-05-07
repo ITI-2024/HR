@@ -1,5 +1,6 @@
 ﻿using HR.DTO;
 using HR.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,6 +17,7 @@ namespace HR.Controllers
             db = _db;
         }
         [HttpGet]
+        [Authorize(Roles ="Employee.View")]
         public ActionResult getAllEmployees()
         {
             var employees = db.Employees.Include(e => e.dept).ToList();
@@ -37,13 +39,15 @@ namespace HR.Controllers
             return Ok(employeesDTO);
         }
         [HttpGet("id")]
-        public IActionResult GetEmployeeById(string id)
+       // [Authorize(Roles = "Employee.View")]
+        public IActionResult GetEmplyeeById(string id)
         {
             var emp = db.Employees.Where(a => a.id == id).FirstOrDefault();
             if (emp == null) return NotFound();
             return Ok(emp);
         }
         [HttpPost]
+       // [Authorize(Roles = "Employee.Create")]
         public IActionResult AddEmployee(Employee emp)
         {
             var employee = db.Employees.Where(e => e.id == emp.id).FirstOrDefault();
@@ -60,6 +64,7 @@ namespace HR.Controllers
             return BadRequest();
         }
         [HttpPut]
+       // [Authorize(Roles = "Employee.Update")]
         public IActionResult EditEmployee(Employee emp)
         {
             if (emp == null) return BadRequest();
@@ -67,17 +72,10 @@ namespace HR.Controllers
             db.SaveChanges();
             return Ok(emp);
         }
-        //[HttpDelete("{id}")]
-        //public IActionResult DeleteEmployee(string id)
-        //{
-        //    var emp = db.Employees.Find(id);
-        //    if (emp is null) return NotFound();
-        //    db.Employees.Remove(emp);
-        //    db.SaveChanges();
-        //    return Ok(emp);
-
-        //}
+     
+   
         [HttpDelete("employees/{id}")]
+        // [Authorize(Roles = "Employee.delete")]
         public async Task<IActionResult> DeleteEmployees(string id)
         {
             var employee = await db.Employees

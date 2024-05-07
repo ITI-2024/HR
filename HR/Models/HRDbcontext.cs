@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace HR.Models
 {
-    public class HRDbcontext : IdentityDbContext<ApplictionUsers, group, string>
+    public class HRDbcontext : IdentityDbContext<ApplictionUsers>
     {
         public HRDbcontext(DbContextOptions<HRDbcontext> options) : base(options)
         {
@@ -18,7 +18,8 @@ namespace HR.Models
         public virtual DbSet<HolidaySetting> Holidays { get; set; }
         public virtual DbSet<department> Departments { get; set; }
         public virtual DbSet<PublicSetting> PublicSettings { get; set; }
-        public DbSet<group> Roles { get; set; }
+        public DbSet<RoleName> Roles { get; set; }
+        public DbSet<permission> Permissions { get; set; }
         public virtual DbSet<AttendenceEmployee> AttendenceEmployees { get; set; }
 
 

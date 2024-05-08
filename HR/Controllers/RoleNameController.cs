@@ -27,7 +27,7 @@ namespace HR.Controllers
             this._roleNameRepository = _roleNameRepository;
         }
         [HttpGet("GetAllRoles")]
-      //[Authorize(Roles = "Permission.View")]
+      //[Authorize(Roles = "Permissions.View")]
         public async Task<IActionResult> GetAllRoles()
         {
 
@@ -36,10 +36,17 @@ namespace HR.Controllers
             
         }
         [HttpPost("CreateRole")]
+        //[Authorize(Roles = "Permissions.Create")]
         public async Task<IActionResult> CreateRoleName(RoleDTO roleDto)
         {
+            var nameexist = _roleNameRepository.GetRoleNameByName(roleDto.Name);
+            if (nameexist != null)
+            {
+                return BadRequest("This name is exist");
+            }
             if (ModelState.IsValid)
             {
+                
                 RoleName roleName = new RoleName
                 {
                     GroupName = roleDto.Name,
@@ -76,6 +83,7 @@ namespace HR.Controllers
             }
         }
         [HttpGet("GetGroupById/{id:int}")]
+      //  [Authorize(Roles = "Permissions.View")]
         public async Task<IActionResult> GetGroupById(int id)
         {
             var group = await _roleNameRepository.GetRoleNameById(id);
@@ -86,6 +94,7 @@ namespace HR.Controllers
             return Ok(group);
         }
         [HttpPut("UpdateRole/{id}")]
+      //  [Authorize(Roles = "Permissions.Update")]
         public async Task<IActionResult> UpdateRole(int id, RoleDTO roleDto)
         {
             var existingRole = await _roleNameRepository.GetRoleNameById(id);
@@ -117,6 +126,7 @@ namespace HR.Controllers
             return NoContent();
         }
         [HttpDelete("DeleteRole/{id}")]
+       // [Authorize(Roles = "Permissions.Delete")]
         public async Task<IActionResult> DeleteRole(int id)
         {
             var roleToDelete = await _roleNameRepository.GetRoleNameById(id);
@@ -127,20 +137,7 @@ namespace HR.Controllers
             await _roleNameRepository.RoleNameDelete(roleToDelete);
             return Ok();
         }
-        [HttpGet("{id}")]
-        public IActionResult GetRoleById(string id) {
-            var role = db.Roles.FirstOrDefault(x => x.Id==id);
-            return Ok(role);
-        }
-        [HttpDelete("{id}")]
-        public IActionResult DeleteRoleById(string id)
-        {
-            var role = db.Roles.FirstOrDefault(y => y.Id==id);
-            if(role == null) return NotFound();
-            db.Roles.Remove(role);
-            db.SaveChanges();
-            return Ok(role);
-        }
+       
     }
 
 

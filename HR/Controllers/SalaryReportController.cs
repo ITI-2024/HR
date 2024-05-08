@@ -1,5 +1,6 @@
 ﻿using HR.DTO;
 using HR.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,7 @@ namespace HR.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+  //  [Authorize(Roles = "Admin")]
     public class SalaryReportController : ControllerBase
     {
 
@@ -23,7 +25,7 @@ namespace HR.Controllers
             this.db = _db;
         }
         [HttpGet]
-
+      //  [Authorize(Roles = "SalaryReport.View")]
         public IActionResult GetReport()
         {
             var absent = 0;
@@ -180,6 +182,7 @@ namespace HR.Controllers
 
 
         [HttpGet("{name}")]
+       // [Authorize(Roles = "SalaryReport.View")]
         public IActionResult SearchByname(string name)
         {
             string fullname = name;
@@ -217,6 +220,7 @@ namespace HR.Controllers
 
         }
         [HttpGet("{year:int}/{month:alpha}")]
+       // [Authorize(Roles = "SalaryReport.View")]
         public IActionResult SearchByDateRepot(int year, string month)
         {
             if (year < 2008 || year > DateOnly.FromDateTime(DateTime.Now).Year) return NotFound("Please enter Correct year");
@@ -266,6 +270,7 @@ namespace HR.Controllers
         }
 
         [HttpGet("BythreeEele")]
+        //[Authorize(Roles = "SalaryReport.View")]
         public IActionResult SearchbythreeElement(int? year, string? month, string? name)
         {
             // Check if any of the parameters are null

@@ -1,5 +1,6 @@
 
 
+using HR.Controllers;
 using HR.Helper;
 using HR.Migrations;
 using HR.Models;
@@ -33,6 +34,7 @@ namespace HR
            builder.Services.Configure<Jwt>(builder.Configuration.GetSection("Jwt"));
             builder.Services.AddScoped<IAuthServies, AuthSerives>();
             builder.Services.AddScoped<IRoleNameRepository, RoleNameRepository>();
+          
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -103,6 +105,7 @@ namespace HR
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
                 await DefaultRole.SeedAsync(roleManager);
                 await UserSeed.SeedBasicUserAsync(userManager, roleManager);
+                
      
             }
 

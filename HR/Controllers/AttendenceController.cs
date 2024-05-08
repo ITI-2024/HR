@@ -1,5 +1,6 @@
 ﻿using HR.DTO;
 using HR.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -10,6 +11,7 @@ namespace HR.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+   // [Authorize(Roles = "Admin")]
     public class AttendenceController : ControllerBase
     {
         private HRDbcontext db { get; }
@@ -18,6 +20,7 @@ namespace HR.Controllers
             db = _db;
         }
         [HttpGet]
+       // [Authorize(Roles = "Attendance.View")]
         public ActionResult getAttendenceReport()
         {
             var attendence = db.AttendenceEmployees.Include(a => a.Emp).Include(a=>a.department).ToList();
@@ -36,6 +39,7 @@ namespace HR.Controllers
         }
 
         [HttpPost]
+       // [Authorize(Roles = "Attendance.Create")]
         public IActionResult AddEmployeeAttendence(AddAttendenceDTO emp)
         {
             if (emp == null) return NotFound();
@@ -79,6 +83,7 @@ namespace HR.Controllers
             return BadRequest();
         }
         [HttpGet("{id:int}")]
+      //  [Authorize(Roles = "Attendance.View")]
         public IActionResult GetById(int id)
         {
             var empAttendence = db.AttendenceEmployees.Where(a => a.Id == id).FirstOrDefault();
@@ -87,6 +92,7 @@ namespace HR.Controllers
         }
 
         [HttpGet("search")]
+        //[Authorize(Roles = "Attendance.View")]
         public IActionResult Search(DateOnly? fromDate, DateOnly? toDate,string? name)
         {
             var searchNameList = new List<AttendenceEmployee>();
@@ -174,6 +180,7 @@ namespace HR.Controllers
             return BadRequest();
         }
         [HttpDelete("{id}")]
+       // [Authorize(Roles = "Delete.View")]
         public IActionResult DeleteEmployeeAttendence(int id)
         {
             var empAttendence = db.AttendenceEmployees.Find(id);

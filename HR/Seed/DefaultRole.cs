@@ -1,4 +1,5 @@
 ﻿using HR.Contant;
+using HR.Models;
 using Microsoft.AspNetCore.Identity;
 using System.Data;
 
@@ -11,7 +12,7 @@ namespace HR.Seed
             if (!roleManger.Roles.Any())
             {
                 await roleManger.CreateAsync(new IdentityRole(UserRole.Admin.ToString()));
-                
+              
             }
         }
     }

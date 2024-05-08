@@ -16,7 +16,7 @@ namespace HR.Seed
                 var Adminuser = new ApplictionUsers()
                 {
                     UserName = "Admin", //Admin
-                    Email = "Admain@gmail.com", //ashraf@pioneers-solutions.com
+                    Email = "admin@gmail.com", //ashraf@pioneers-solutions.com
                     Fullname = "AdminUser", //"Ashraf Nouh CEOAdmin
                     EmailConfirmed = true,
                     PhoneNumber = "123456",

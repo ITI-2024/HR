@@ -1,5 +1,6 @@
 ﻿using HR.DTO;
 using HR.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.Intrinsics.Arm;
@@ -8,6 +9,7 @@ namespace HR.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize(Roles = "Admin")]
     public class PublicSettingController : ControllerBase
     {
         private readonly HRDbcontext db;
@@ -15,6 +17,7 @@ namespace HR.Controllers
             this.db = _db;
         }
         [HttpPost]
+       // [Authorize(Roles = "PublicSetting.Create")]
         public IActionResult AddSetting(PublicSetting s) { 
             if(s == null) return BadRequest();
             if(ModelState.IsValid)
@@ -29,6 +32,7 @@ namespace HR.Controllers
 
         }
         [HttpGet]
+        // [Authorize(Roles = "PublicSetting.View")]
         public IActionResult getSetting()
         {
             var setting=db.PublicSettings.ToList();
@@ -37,6 +41,7 @@ namespace HR.Controllers
 
         }
         [HttpPut("{id}")]
+        // [Authorize(Roles = "PublicSetting.Update")]
         public IActionResult UpdateSetting(int id, publicSettingDto s) 
         {
             if (s == null) return BadRequest();

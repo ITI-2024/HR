@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using HR.Contant;
+using HR.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace HR.Models
 {

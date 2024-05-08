@@ -1,4 +1,5 @@
-﻿using HR.ViewModel;
+﻿using HR.Models;
+using HR.ViewModel;
 
 namespace HR.serviec
 {
@@ -6,6 +7,7 @@ namespace HR.serviec
     {
         Task<AuthModel> RegisterAsync(RegisterModel model);
         Task<AuthModel> LoginAsync(Login model);
-        
+        Task<List<ApplictionUsers>> GetAllUsersAsync();
+
     }
 }

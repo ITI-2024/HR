@@ -9,6 +9,7 @@ namespace HR.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize(Roles = "Admin")]
     public class EmployeeController : ControllerBase
     {
         private HRDbcontext db { get; }
@@ -17,7 +18,7 @@ namespace HR.Controllers
             db = _db;
         }
         [HttpGet]
-        [Authorize(Roles ="Employee.View")]
+      //[Authorize(Roles ="Employee.View")]
         public ActionResult getAllEmployees()
         {
             var employees = db.Employees.Include(e => e.dept).ToList();

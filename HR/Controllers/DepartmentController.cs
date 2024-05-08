@@ -17,6 +17,7 @@ namespace HR.Controllers
             
         }
         [HttpGet]
+
         public IActionResult GetDepartment()
         {
             var department = db.Departments.ToList();

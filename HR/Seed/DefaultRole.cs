@@ -14,7 +14,7 @@ namespace HR.Seed
         {
             if (!roleManager.Roles.Any())
             {
-                await roleManger.CreateAsync(new IdentityRole(UserRole.Admin.ToString()));
+                await roleManager.CreateAsync(new IdentityRole(UserRole.Admin.ToString()));
               
             }
         }

@@ -1,4 +1,5 @@
 ﻿using HR.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace HR.Repository
 {

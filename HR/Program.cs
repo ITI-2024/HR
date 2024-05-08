@@ -29,7 +29,7 @@ namespace HR
       
             builder.Services.AddControllers();
 
-            builder.Services.AddDbContext<HRDbcontext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("Mycon")));
+            builder.Services.AddDbContext<HRDbcontext>(option => option.UseSqlServer(builder.Configuration.GetConnectionString("Mycon")), ServiceLifetime.Scoped);
             builder.Services.AddIdentity<ApplictionUsers, IdentityRole>().AddEntityFrameworkStores<HRDbcontext>()
            .AddDefaultTokenProviders().AddRoles<IdentityRole>();
            builder.Services.Configure<Jwt>(builder.Configuration.GetSection("Jwt"));

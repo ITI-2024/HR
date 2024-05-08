@@ -39,21 +39,18 @@ namespace HR.Controllers
         //[Authorize(Roles = "Permissions.Create")]
         public async Task<IActionResult> CreateRoleName(RoleDTO roleDto)
         {
-            var nameexist = _roleNameRepository.GetRoleNameByName(roleDto.Name);
-            if (nameexist != null)
-            {
-                return BadRequest("This name is exist");
-            }
-            if (ModelState.IsValid)
-            {
-                
-                RoleName roleName = new RoleName
+           var nameexist =  await _roleNameRepository.GetRoleNameByName(roleDto.Name);
+          
+                if (ModelState.IsValid)
                 {
-                    GroupName = roleDto.Name,
-                    Permissions = new List<permission>(),
-                };
 
-                  ////
+                    RoleName roleName = new RoleName
+                    {
+                        GroupName = roleDto.Name,
+                        Permissions = new List<permission>(),
+                    };
+
+                    ////
                     foreach (var permissionDto in roleDto.Permissions)
                     {
                         // Convert PermissionDTO to Permission entity
@@ -68,23 +65,24 @@ namespace HR.Controllers
 
 
                         roleName.Permissions.Add(perm);
-                    
 
-                }
-                RoleName createdRole = await _roleNameRepository.RoleNameCreate(roleName);
-                if (createdRole != null)
-                {
-                    return Ok(createdRole);
+
+                    }
+                    RoleName createdRole = await _roleNameRepository.RoleNameCreate(roleName);
+                    if (createdRole != null)
+                    {
+                        return Ok(createdRole);
+                    }
+                    else
+                    {
+                        return BadRequest("Failed to create role.");
+                    }
                 }
                 else
                 {
-                    return BadRequest("Failed to create role.");
+                    return BadRequest(ModelState);
                 }
-            }
-            else
-            {
-                return BadRequest(ModelState);
-            }
+            
         }
         [HttpGet("GetGroupById/{id:int}")]
       //  [Authorize(Roles = "Permissions.View")]

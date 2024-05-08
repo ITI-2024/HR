@@ -7,13 +7,17 @@ namespace HR.Seed
 {
     public static class DefaultRole
     {
-        public static async Task SeedAsync(RoleManager<IdentityRole> roleManger)
+        public static readonly HRDbcontext db;
+        public  static readonly RoleManager<IdentityRole> _roleMaeger;
+
+        public static async Task SeedAsync(RoleManager<IdentityRole> roleManager, HRDbcontext? db)
         {
-            if (!roleManger.Roles.Any())
+            if (!roleManager.Roles.Any())
             {
                 await roleManger.CreateAsync(new IdentityRole(UserRole.Admin.ToString()));
               
             }
         }
+
     }
 }

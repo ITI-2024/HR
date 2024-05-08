@@ -52,20 +52,24 @@ namespace HR.Controllers
                     GroupName = roleDto.Name,
                     Permissions = new List<permission>(),
                 };
-                ////
-                foreach (var permissionDto in roleDto.Permissions)
-                {
-                    // Convert PermissionDTO to Permission entity
-                    permission perm = new permission
-                    {
-                        name = permissionDto.name,
-                        create = permissionDto.Create ?? false,
-                        delete = permissionDto.Delete ?? false,
-                        view = permissionDto.View ?? false,
-                        update = permissionDto.Update ?? false
-                    };
 
-                    roleName.Permissions.Add(perm);
+                  ////
+                    foreach (var permissionDto in roleDto.Permissions)
+                    {
+                        // Convert PermissionDTO to Permission entity
+                        permission perm = new permission
+                        {
+                            name = permissionDto.name,
+                            create = permissionDto.Create ?? false,
+                            delete = permissionDto.Delete ?? false,
+                            view = permissionDto.View ?? false,
+                            update = permissionDto.Update ?? false
+                        };
+
+
+                        roleName.Permissions.Add(perm);
+                    
+
                 }
                 RoleName createdRole = await _roleNameRepository.RoleNameCreate(roleName);
                 if (createdRole != null)

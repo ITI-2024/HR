@@ -9,6 +9,7 @@ using HR.Seed;
 using HR.serviec;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -103,7 +104,10 @@ namespace HR
             {
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplictionUsers>>();
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-                await DefaultRole.SeedAsync(roleManager);
+                var hrDbContext = scope.ServiceProvider.GetRequiredService<HRDbcontext>();
+
+                // Call SeedAsync method with both parameters
+                await DefaultRole.SeedAsync(roleManager, hrDbContext);
                 await UserSeed.SeedBasicUserAsync(userManager, roleManager);
                 
      

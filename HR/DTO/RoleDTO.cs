@@ -7,7 +7,7 @@ namespace HR.DTO
     {
         public Guid Id { get; set; }
         [Required]
-        [unique]
+       // [unique]
         public string Name { get; set; }
         public List<PermissionDTO>? Permissions { get; set; }
     }

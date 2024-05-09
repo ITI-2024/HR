@@ -37,24 +37,25 @@ namespace HR.Controllers
         }
         [HttpPost("CreateRole")]
         //[Authorize(Roles = "Permissions.Create")]
-        public async Task<IActionResult> CreateRoleName(RoleDTO roleDto)
+        public async Task<IActionResult> CreateRoleName(RoleDTO roledto)
         {
-            var nameexist = _roleNameRepository.GetRoleNameByName(roleDto.Name);
-            if (nameexist != null)
-            {
-                return BadRequest("This name is exist");
-            }
-            if (ModelState.IsValid)
-            {
-                
-                RoleName roleName = new RoleName
-                {
-                    GroupName = roleDto.Name,
-                    Permissions = new List<permission>(),
-                };
+           
+            
 
-                  ////
-                    foreach (var permissionDto in roleDto.Permissions)
+                if (ModelState.IsValid)
+                {
+
+
+                    RoleName roleName = new RoleName
+                    {
+                        GroupName = roledto.Name,
+                        Permissions = new List<permission>()
+                    };
+
+
+
+                    ////
+                    foreach (var permissionDto in roledto.Permissions)
                     {
                         // Convert PermissionDTO to Permission entity
                         permission perm = new permission
@@ -68,23 +69,25 @@ namespace HR.Controllers
 
 
                         roleName.Permissions.Add(perm);
-                    
 
-                }
-                RoleName createdRole = await _roleNameRepository.RoleNameCreate(roleName);
-                if (createdRole != null)
-                {
-                    return Ok(createdRole);
+
+                    }
+
+                    RoleName createdRole = await _roleNameRepository.RoleNameCreate(roleName);
+                    if (createdRole != null)
+                    {
+                        return Ok(createdRole);
+                    }
+                    else
+                    {
+                        return BadRequest("Failed to create role.");
+                    }
                 }
                 else
                 {
-                    return BadRequest("Failed to create role.");
+                    return BadRequest(ModelState);
                 }
-            }
-            else
-            {
-                return BadRequest(ModelState);
-            }
+            
         }
         [HttpGet("GetGroupById/{id:int}")]
       //  [Authorize(Roles = "Permissions.View")]
@@ -99,19 +102,20 @@ namespace HR.Controllers
         }
         [HttpPut("UpdateRole/{id}")]
       //  [Authorize(Roles = "Permissions.Update")]
-        public async Task<IActionResult> UpdateRole(int id, RoleDTO roleDto)
+        public async Task<IActionResult> UpdateRole(int id,string name, RoleDTO roledto)
         {
             var existingRole = await _roleNameRepository.GetRoleNameById(id);
             if (existingRole == null)
             {
                 return NotFound();
             }
-            existingRole.GroupName = roleDto.Name;
-            if (roleDto.Permissions != null)
+          
+            existingRole.GroupName = roledto.Name;
+            if (roledto.Permissions != null)
             {
                 existingRole.Permissions.Clear();
 
-                foreach (var permissionDto in roleDto.Permissions)
+                foreach (var permissionDto in roledto.Permissions)
                 {
                     var permission = new permission
                     {
@@ -127,7 +131,7 @@ namespace HR.Controllers
 
             await _roleNameRepository.RoleNameUpdate(existingRole);
 
-            return NoContent();
+            return Ok(existingRole);
         }
         [HttpDelete("DeleteRole/{id}")]
        // [Authorize(Roles = "Permissions.Delete")]
@@ -139,6 +143,13 @@ namespace HR.Controllers
                 return NotFound();
             }
             await _roleNameRepository.RoleNameDelete(roleToDelete);
+            return Ok();
+        }
+        [HttpGet("GetByName/{name:alpha}")]
+        public async Task<IActionResult> GetRoleByName(string name)
+        {
+            var ExistinRole= await _roleNameRepository.GetRoleNameByName(name);
+            if (ExistinRole != null) return BadRequest("role name is already exist");
             return Ok();
         }
        

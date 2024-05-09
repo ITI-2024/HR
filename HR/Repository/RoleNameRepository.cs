@@ -1,4 +1,5 @@
 ﻿using HR.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace HR.Repository
@@ -35,9 +36,11 @@ namespace HR.Repository
             _db.Roles.Remove(roleName); 
             _db.SaveChanges();
         }
-        public virtual async Task<RoleName> GetRoleNameByName(string roleName)
+        public virtual  async Task<RoleName> GetRoleNameByName(string roleName)
         {
-            return await _db.Roles.Include(r => r.Permissions).FirstOrDefaultAsync(r => r.GroupName == roleName);
+              var RoleName=await _db.Roles.Include(r => r.Permissions).FirstOrDefaultAsync(r => r.GroupName == roleName);
+            return RoleName;
+
 
         }
     }

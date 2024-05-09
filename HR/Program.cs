@@ -107,7 +107,8 @@ namespace HR
                 var hrDbContext = scope.ServiceProvider.GetRequiredService<HRDbcontext>();
 
                 // Call SeedAsync method with both parameters
-                await DefaultRole.SeedAsync(roleManager, hrDbContext);
+                await DefaultRole.SeedAsync(roleManager);
+                // await DefaultRole.SeedAsync(roleManager, hrDbContext);
                 await UserSeed.SeedBasicUserAsync(userManager, roleManager);
                 
      

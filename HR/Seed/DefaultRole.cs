@@ -10,12 +10,16 @@ namespace HR.Seed
         public static readonly HRDbcontext db;
         public  static readonly RoleManager<IdentityRole> _roleMaeger;
 
-        public static async Task SeedAsync(RoleManager<IdentityRole> roleManager, HRDbcontext? db)
+        public static async Task SeedAsync(RoleManager<IdentityRole> roleManager)
         {
             if (!roleManager.Roles.Any())
             {
-                await roleManger.CreateAsync(new IdentityRole(UserRole.Admin.ToString()));
-              
+                
+                await roleManager.CreateAsync(new IdentityRole(UserRole.Admin.ToString()));
+
+                //var roleName = UserRole.Admin.ToString();
+                //db.Roles.Add(new RoleName { GroupName = roleName });
+                //await db.SaveChangesAsync();
             }
         }
 

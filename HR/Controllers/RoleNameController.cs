@@ -91,7 +91,7 @@ namespace HR.Controllers
         }
         [HttpGet("GetGroupById/{id:int}")]
       //  [Authorize(Roles = "Permissions.View")]
-        public async Task<IActionResult> GetGroupById(int id)
+        public async Task<IActionResult> GetGroupById(int id )
         {
             var group = await _roleNameRepository.GetRoleNameById(id);
             if (group == null)
@@ -102,7 +102,7 @@ namespace HR.Controllers
         }
         [HttpPut("UpdateRole/{id}")]
       //  [Authorize(Roles = "Permissions.Update")]
-        public async Task<IActionResult> UpdateRole(int id,string name, RoleDTO roledto)
+        public async Task<IActionResult> UpdateRole(int id, RoleDTO roledto)
         {
             var existingRole = await _roleNameRepository.GetRoleNameById(id);
             if (existingRole == null)

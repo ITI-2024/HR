@@ -40,7 +40,7 @@ namespace HR.Controllers
             return Ok(employeesDTO);
         }
         [HttpGet("id")]
-       // [Authorize(Roles = "Employee.View")]
+        // [Authorize(Roles = "Employee.View")]
         public IActionResult GetEmplyeeById(string id)
         {
             var emp = db.Employees.Where(a => a.id == id).FirstOrDefault();
@@ -48,7 +48,7 @@ namespace HR.Controllers
             return Ok(emp);
         }
         [HttpPost]
-       // [Authorize(Roles = "Employee.Create")]
+        // [Authorize(Roles = "Employee.Create")]
         public IActionResult AddEmployee(Employee emp)
         {
             var employee = db.Employees.Where(e => e.id == emp.id).FirstOrDefault();
@@ -65,16 +65,18 @@ namespace HR.Controllers
             return BadRequest();
         }
         [HttpPut]
-       // [Authorize(Roles = "Employee.Update")]
+        // [Authorize(Roles = "Employee.Update")]
         public IActionResult EditEmployee(Employee emp)
         {
+            var employee = db.Employees.Where(e => (e.name == emp.name && e.id != emp.id)).FirstOrDefault();
+            if (employee != null) return BadRequest("There is another employee with the same name");
             if (emp == null) return BadRequest();
             db.Employees.Update(emp);
             db.SaveChanges();
             return Ok(emp);
         }
-     
-   
+
+
         [HttpDelete("employees/{id}")]
         // [Authorize(Roles = "Employee.delete")]
         public async Task<IActionResult> DeleteEmployees(string id)

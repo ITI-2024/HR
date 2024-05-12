@@ -4,7 +4,7 @@ namespace HR.Helper
 {
     public static class PermissionGeneret
     {
-        public static List<string> GeneratePermissionsList(string module,bool?  create, bool? delete, bool? view, bool? update)
+        public static List<string> GeneratePermissionsList(string module,bool?  create, bool? update, bool? delete, bool? view)
         {
             List<string> permissions = new List<string>();
 

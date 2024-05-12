@@ -1,12 +1,15 @@
 ﻿using HR.DTO;
+using HR.Helper;
 using HR.Models;
 using HR.Repository;
+using HR.serviec;
 using HR.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.ConstrainedExecution;
 using System.Security;
 
 namespace HR.Controllers
@@ -19,9 +22,10 @@ namespace HR.Controllers
         public RoleManager<IdentityRole> roleManager { get; }
         public readonly HRDbcontext db;
         public readonly IRoleNameRepository _roleNameRepository;
-
-        public RoleNameController(RoleManager<IdentityRole> roleManager, HRDbcontext _dbl, IRoleNameRepository _roleNameRepository)
+        UserManager<ApplictionUsers> _userManager;
+        public RoleNameController(UserManager<ApplictionUsers> _userManager, RoleManager<IdentityRole> roleManager, HRDbcontext _dbl, IRoleNameRepository _roleNameRepository)
         {
+            this._userManager = _userManager;
             this.roleManager = roleManager;
             this.db = _dbl;
             this._roleNameRepository = _roleNameRepository;
@@ -130,7 +134,33 @@ namespace HR.Controllers
             }
 
             await _roleNameRepository.RoleNameUpdate(existingRole);
-
+            // Update the roles of users associated with the updated role name
+            var users = db.Users.Include(u => u.RoleNames).Where(u => u.roleId == existingRole.Id).ToList();
+            foreach (var user in users)
+            {
+             
+                    var currentRoles = await _userManager.GetRolesAsync(user);
+                    //RoleName roleName = await _roleNameRepository.GetRoleNameById(user.roleId);
+                    await _userManager.RemoveFromRolesAsync(user, currentRoles.ToArray());
+                    List<string> nameoftableperm = new List<string>();
+                    // Add the user to the updated role
+                    foreach (var permission in existingRole.Permissions)
+                    {
+                        var p = PermissionGeneret.GeneratePermissionsList(permission.name, permission.create, permission.update, permission.delete, permission.view);
+                        foreach (var per in p)
+                        {
+                            if (!await roleManager.RoleExistsAsync(per))
+                                await roleManager.CreateAsync(new IdentityRole(per));
+                            nameoftableperm.Add(per);
+                        }
+                    }
+                    List<string> roles = nameoftableperm;
+                    foreach(var role in roles)
+                    {
+                        await _userManager.AddToRoleAsync(user, role);
+                    }
+                }
+            
             return Ok(existingRole);
         }
         [HttpDelete("DeleteRole/{id}")]

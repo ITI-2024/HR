@@ -18,7 +18,6 @@ namespace HR.Controllers
             db = _db;
         }
         [HttpGet]
-        [Authorize(Roles = "Employee.View")]
         public ActionResult getAllEmployees()
         {
             var employees = db.Employees.Include(e => e.dept).ToList();

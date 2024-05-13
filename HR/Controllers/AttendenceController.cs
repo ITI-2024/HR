@@ -253,14 +253,24 @@ namespace HR.Controllers
                         {
                             var dateValue = worksheet.Cells[row, 1].GetValue<DateTime>();
                             var arrivingTimeValue = worksheet.Cells[row, 2].GetValue<TimeSpan>(); // Assuming the Excel cell contains a TimeSpan value
+                            
                             var leavingTimeValue = worksheet.Cells[row, 3].GetValue<TimeSpan>(); // Assuming the Excel cell contains a TimeSpan value
                             var idemp = worksheet.Cells[row, 4].GetValue<string>();
                             var idDept = worksheet.Cells[row, 5].GetValue<int>();
 
                             // Convert TimeSpan to TimeOnly
-                            var arrivingTime = new TimeOnly(arrivingTimeValue.Hours, arrivingTimeValue.Minutes, arrivingTimeValue.Seconds);
-                            var leavingTime = new TimeOnly(leavingTimeValue.Hours, leavingTimeValue.Minutes, leavingTimeValue.Seconds);
+                            TimeOnly? arrivingTime = null;
+                            TimeOnly? leavingTime = null;
 
+                            // Convert TimeSpan to TimeOnly
+                            if (arrivingTimeValue != TimeSpan.Zero)
+                            {
+                                arrivingTime = new TimeOnly(arrivingTimeValue.Hours, arrivingTimeValue.Minutes, arrivingTimeValue.Seconds);
+                            }
+                            if (leavingTimeValue != TimeSpan.Zero)
+                            {
+                                leavingTime = new TimeOnly(leavingTimeValue.Hours, leavingTimeValue.Minutes, leavingTimeValue.Seconds);
+                            }
                             var attendance = new AttendenceEmployee
                             {
                                 dayDate = DateOnly.FromDateTime(dateValue),

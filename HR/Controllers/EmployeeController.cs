@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
 
 namespace HR.Controllers
 {
@@ -103,5 +104,58 @@ namespace HR.Controllers
 
             return NoContent();
         }
+        //[HttpPost("import-excel")]
+        //public async Task<IActionResult> ImportExcelFile(IFormFile file)
+        //{
+        //    try
+        //    {
+            
+        //        if (file == null || file.Length <= 0)
+        //         {
+        //                return BadRequest("File is empty or missing.");
+        //            }
+        //        var employees = new List<Employee>();
+        //        using (var stream = new MemoryStream())
+        //        {
+        //            await file.CopyToAsync(stream);
+        //            using (var package = new ExcelPackage(stream))
+        //            {
+        //                var worksheet = package.Workbook.Worksheets[0];
+        //                var rowCount = worksheet.Dimension.Rows;
+
+        //                for (int row = 2; row <= rowCount; row++) // Assuming row 1 is header
+        //                {
+        //                    var nationality = worksheet.Cells[row, 1].GetValue<string>();
+        //                    var name = worksheet.Cells[row, 2].GetValue<string>();
+        //                    var birthDate = worksheet.Cells[row, 3].GetValue<DateTime>();
+        //                    var arrivingTimeValue = worksheet.Cells[row, 2].GetValue<TimeSpan>(); // Assuming the Excel cell contains a TimeSpan value
+        //                    var leavingTimeValue = worksheet.Cells[row, 3].GetValue<TimeSpan>(); // Assuming the Excel cell contains a TimeSpan value
+        //                    var idemp = worksheet.Cells[row, 4].GetValue<string>();
+        //                    var idDept = worksheet.Cells[row, 5].GetValue<int>();
+        //                    var employee = new Employee
+        //                    {
+        //                        id = worksheet.Cells[row, 1].GetValue<string>(),
+                               
+        //                        address = worksheet.Cells[row, 3].GetValue<string>(),
+        //                        phoneNumber = worksheet.Cells[row, 4].GetValue<string>(),
+        //                        birthDate = worksheet.Cells[row, 5].GetValue<DateTime>(), // Assuming the cell contains a valid Date value
+        //                        gender = worksheet.Cells[row, 6].GetValue<string>(),
+                            
+        //                        contractDate = worksheet.Cells[row, 8].GetValue<DateTime>(), // Assuming the cell contains a valid Date value
+        //                        arrivingTime = worksheet.Cells[row, 9].GetValue<TimeSpan>(), // Assuming the cell contains a valid TimeSpan value
+        //                        leavingTime = worksheet.Cells[row, 10].GetValue<TimeSpan>(), // Assuming the cell contains a valid TimeSpan value
+        //                        salary = worksheet.Cells[row, 11].GetValue<double>(), // Assuming the cell contains a valid double value
+        //                        idDept = worksheet.Cells[row, 12].GetValue<int>() // Assuming the cell contains a valid int value
+        //                    };
+
+        //                    employees.Add(employee);
+        //                }
+        //            }
+
+
+        //            }
+
+
     }
+
 }

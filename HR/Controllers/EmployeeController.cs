@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OfficeOpenXml;
+using System.Net;
+using System.Reflection;
 
 namespace HR.Controllers
 {
@@ -102,5 +105,89 @@ namespace HR.Controllers
 
             return NoContent();
         }
+        [HttpPost("import-excel")]
+        public async Task<IActionResult> ImportExcelFile(IFormFile file)
+        {
+            try
+            {
+                if (file == null || file.Length <= 0)
+                {
+                    return BadRequest("File is empty or missing.");
+                }
+
+                var employees = new List<Employee>();
+
+                using (var stream = new MemoryStream())
+                {
+                    await file.CopyToAsync(stream);
+                    using (var package = new ExcelPackage(stream))
+                    {
+                        var worksheet = package.Workbook.Worksheets[0];
+                        var rowCount = worksheet.Dimension.Rows;
+
+                        for (int row = 2; row <= rowCount; row++) // Assuming row 1 is header
+                        {
+                            // Validate and parse each cell value
+                            var id = worksheet.Cells[row, 1].GetValue<string>();
+                            var name = worksheet.Cells[row, 2].GetValue<string>();
+                            var gender = worksheet.Cells[row, 3].GetValue<string>();
+                            var birthDate = worksheet.Cells[row, 4].GetValue<DateTime>();
+                            var address = worksheet.Cells[row, 5].GetValue<string>();
+                            var phoneNumber = worksheet.Cells[row, 6].GetValue<string>();
+                            var nationality = worksheet.Cells[row, 7].GetValue<string>();
+                            var contractDate = worksheet.Cells[row, 8].GetValue<DateTime>();
+                            var arrivingTimeValue = worksheet.Cells[row, 9].GetValue<TimeSpan>();
+                            var leavingTimeValue = worksheet.Cells[row, 10].GetValue<TimeSpan>();
+                            var salary = worksheet.Cells[row, 11].GetValue<double>();
+                            var departmentId = worksheet.Cells[row, 12].GetValue<int>();
+
+                            // Validate and convert TimeSpan to TimeOnly
+                            var arrivingTime = new TimeOnly(arrivingTimeValue.Hours, arrivingTimeValue.Minutes, arrivingTimeValue.Seconds);
+                            var leavingTime = new TimeOnly(leavingTimeValue.Hours, leavingTimeValue.Minutes, leavingTimeValue.Seconds);
+
+                            // Create Employee object
+                            var employee = new Employee
+                            {
+                                id = id,
+                                name = name,
+                                gender = gender,
+                                birthDate = DateOnly.FromDateTime(birthDate),
+                                phoneNumber = phoneNumber,
+                                address = address,
+                                nationality = nationality,
+                                contractDate = DateOnly.FromDateTime(contractDate),
+                                arrivingTime = arrivingTime,
+                                leavingTime = leavingTime,
+                                salary = salary,
+                                idDept = departmentId
+                            };
+
+                            employees.Add(employee);
+                        }
+                    }
+                }
+
+                // Add employees to the database
+                await db.Employees.AddRangeAsync(employees);
+                await db.SaveChangesAsync();
+
+                return Ok(new { ImportResult = true });
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                
+
+                // Return error response
+                return StatusCode(500, $"An error occurred while importing the Excel file: {ex.Message}");
+            }
+        }
+
+        
     }
 }
+
+
+            
+
+

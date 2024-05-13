@@ -10,3 +10,6 @@ V1
 2:claims,QO
 2:roleName,x
 2:CreateRoleName,D
+2:GetGroupById,j
+2:id,C
+2:group,M

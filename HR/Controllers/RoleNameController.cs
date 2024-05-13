@@ -95,7 +95,7 @@ namespace HR.Controllers
         }
         [HttpGet("GetGroupById/{id:int}")]
       //  [Authorize(Roles = "Permissions.View")]
-        public async Task<IActionResult> GetGroupById(int id)
+        public async Task<IActionResult> GetGroupById(int id )
         {
             var group = await _roleNameRepository.GetRoleNameById(id);
             if (group == null)

@@ -225,7 +225,7 @@ namespace HR.Controllers
             return Ok(empAttendence);
 
         }
-        
+
 
 
         [HttpPost("import-excel")]
@@ -253,7 +253,6 @@ namespace HR.Controllers
                         {
                             var dateValue = worksheet.Cells[row, 1].GetValue<DateTime>();
                             var arrivingTimeValue = worksheet.Cells[row, 2].GetValue<TimeSpan>(); // Assuming the Excel cell contains a TimeSpan value
-                            
                             var leavingTimeValue = worksheet.Cells[row, 3].GetValue<TimeSpan>(); // Assuming the Excel cell contains a TimeSpan value
                             var idemp = worksheet.Cells[row, 4].GetValue<string>();
                             var idDept = worksheet.Cells[row, 5].GetValue<int>();
@@ -262,7 +261,6 @@ namespace HR.Controllers
                             TimeOnly? arrivingTime = null;
                             TimeOnly? leavingTime = null;
 
-                            // Convert TimeSpan to TimeOnly
                             if (arrivingTimeValue != TimeSpan.Zero)
                             {
                                 arrivingTime = new TimeOnly(arrivingTimeValue.Hours, arrivingTimeValue.Minutes, arrivingTimeValue.Seconds);
@@ -271,6 +269,7 @@ namespace HR.Controllers
                             {
                                 leavingTime = new TimeOnly(leavingTimeValue.Hours, leavingTimeValue.Minutes, leavingTimeValue.Seconds);
                             }
+
                             var attendance = new AttendenceEmployee
                             {
                                 dayDate = DateOnly.FromDateTime(dateValue),
@@ -280,16 +279,25 @@ namespace HR.Controllers
                                 idDept = idDept
                             };
 
-                            attendances.Add(attendance);
-                        }
+                            // Check for existing attendance to prevent duplicates
+                            var exists = await db.AttendenceEmployees
+                                                 .AnyAsync(a => a.idemp == idemp && a.dayDate == attendance.dayDate);
 
+                            if (!exists)
+                            {
+                                attendances.Add(attendance);
+                            }
+                        }
                     }
                 }
 
-                await db.AttendenceEmployees.AddRangeAsync(attendances);
-                await db.SaveChangesAsync();
+                if (attendances.Count > 0)
+                {
+                    await db.AttendenceEmployees.AddRangeAsync(attendances);
+                    await db.SaveChangesAsync();
+                }
 
-                return Ok(new { ImportResult = true });
+                return Ok(new { ImportResult = true, RecordsAdded = attendances.Count });
             }
             catch (Exception ex)
             {

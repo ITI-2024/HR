@@ -299,11 +299,6 @@ namespace HR.Controllers
         //[Authorize(Roles = "SalaryReport.View")]
         public IActionResult SearchbythreeElement(int year, string month, string name)
         {
-            // Check if any of the parameters are null
-            if (name == null && year == null && month == null)
-            {
-                return BadRequest(" must enter at least one parameter");
-            }
 
             // Check if the year parameter is within a valid range
             if (year < 2008 || year > DateOnly.FromDateTime(DateTime.Now).Year)
@@ -320,12 +315,9 @@ namespace HR.Controllers
 
             List<SalaryReportDto> SalaryFilterByName = new List<SalaryReportDto>();
 
-            // Filter the empReport based on parameters
-            var reportResult = empReport.Where(e =>
-                (e.name.ToLower().Contains(name.ToLower())) &&             // Filter by name if provided
-                ( e.AttendencperMonths.Any(a => a.Monthofyear.Year == year)) &&  // Filter by year if provided
-                ( e.AttendencperMonths.Any(a => a.nameofMonth.ToLower() == month.ToLower()))  // Filter by month if provided
-            ).SelectMany(e => e.AttendencperMonths).ToList();  // Flatten the list of AttendencperMonths
+            var reportResult = empReport.Where(e => e.name.ToLower().Contains(name.ToLower())).SelectMany(e => e.AttendencperMonths)
+            .Where(a => a.nameofMonth.ToLower() == month.ToLower() && a.Monthofyear.Year == year)
+                           .ToList();
 
             if (reportResult.Count == 0)
             {
@@ -338,6 +330,9 @@ namespace HR.Controllers
             foreach (var item in reportResult)
             {
                 var idemp = db.Employees.Include(e => e.dept).FirstOrDefault(e => e.id == item.idemp);
+                var salaryPerDay = Math.Round((idemp.salary / 30), 2);
+                //calcu salary per hour
+                var salaryPerHour = Math.Round((salaryPerDay / (idemp.leavingTime.Hour - idemp.arrivingTime.Hour)), 2);
                 SalaryReportDto salaryReportDto = new SalaryReportDto()
                 {
                     nameMonth = item.Monthofyear.ToString("MMMM"),
@@ -347,12 +342,12 @@ namespace HR.Controllers
                     mainSalary = idemp.salary,
                     attendDay = item.attendofDay,
                     absentDay = item.absentday,
-                    extraHours = setting.extraHours,
-                    dedectionHours = setting.deductionHours,
+                    extraHours = (item.extraTime * setting.extraHours),
+                    dedectionHours = item.discountTime * setting.deductionHours,
                     extraTimebeforSetting = item.extraTime,
                     discountTimebeforSetting = item.discountTime,
-                    totalExtra = item.extraTime * setting.extraHours,
-                    totalDiscount = item.discountTime * setting.deductionHours,
+                    totalExtra = Math.Round(item.extraTime * setting.extraHours * salaryPerHour, 2),
+                    totalDiscount = Math.Round(item.discountTime * setting.deductionHours * salaryPerHour, 2),
                     totalNetSalary = item.totalNetSalary,
 
 

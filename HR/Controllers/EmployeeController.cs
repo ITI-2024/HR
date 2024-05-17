@@ -23,7 +23,7 @@ namespace HR.Controllers
         [HttpGet]
         public ActionResult getAllEmployees()
         {
-            var employees = db.Employees.Include(e => e.dept).ToList();
+            var employees = db.Employees.Include(e => e.dept).OrderBy(e=>e.name).ToList();
             var employeesDTO = employees.Select(e => new EmployeeDepartmentNameDTO
             {
                 NationalID = e.id,

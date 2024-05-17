@@ -72,11 +72,27 @@ namespace HR.Controllers
                                     item.AttendencperMonths = new List<informationAttendencperMonth>();
                                 item.AttendencperMonths.Add(element);
                                 db.SaveChanges();
-                                extraTime = 0;
-                                discountTime = 0;
-                                attend = 0;
-                                absent = 0;
+                                
 
+                            }
+                            extraTime = 0;
+                            discountTime = 0;
+                            attend = 0;
+                            absent = 0;
+                            if (empAttendece[i].leavingTime != null && empAttendece[i].arrivingTime != null)
+                            {
+
+                                attend += 1;
+                                if (empAttendece[i].arrivingTime > item.arrivingTime)
+                                { discountTime += Math.Abs(empAttendece[i].arrivingTime.Value.Hour - item.arrivingTime.Hour); }
+                                if (empAttendece[i].leavingTime > item.leavingTime)
+                                { extraTime += Math.Abs(empAttendece[i].leavingTime.Value.Hour - item.leavingTime.Hour); }
+                                if (empAttendece[i].leavingTime < item.leavingTime)
+                                { discountTime += Math.Abs(empAttendece[i].leavingTime.Value.Hour - item.leavingTime.Hour); }
+                            }
+                            else
+                            {
+                                absent += 1;
                             }
 
                         }
